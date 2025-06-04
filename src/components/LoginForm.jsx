@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "../App.css";
 import amtelLogo from "../Asset/Amtel_logo.png";
 import { loginWithEmailAndPassword } from "../services/firebase";
 
 const LoginForm = () => {
+  const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -23,9 +25,8 @@ const LoginForm = () => {
       if (error) {
         setError(error);
       } else {
-        // Handle successful login
-        console.log("Logged in user:", user);
-        // You can redirect the user or update the app state here
+        // Navigate to dashboard after successful login
+        navigate("/dashboard");
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
