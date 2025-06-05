@@ -316,7 +316,7 @@ h1 {
 
 .back-to-login-btn:hover {
   background-color: rgba(229, 57, 53, 0.1);
-}
+  }
 
 .back-to-login-btn:focus {
   outline: none;

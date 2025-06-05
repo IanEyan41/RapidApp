@@ -9,6 +9,7 @@ import "./App.css";
 import LoginForm from "./components/LoginForm";
 import SignUpForm from "./components/SignUpForm";
 import Dashboard from "./components/Dashboard/Dashboard";
+import OvertimeManagement from "./components/OvertimeManagement/OvertimeManagement";
 import { auth } from "./services/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 
@@ -68,6 +69,10 @@ function App() {
         <Route
           path="/dashboard"
           element={user ? <Dashboard /> : <Navigate to="/" replace />}
+        />
+        <Route
+          path="/overtime-management"
+          element={user ? <OvertimeManagement /> : <Navigate to="/" replace />}
         />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

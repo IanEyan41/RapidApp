@@ -1,0 +1,154 @@
+.overtime-management {
+  min-height: 100vh;
+  background-color: #1a1d21;
+  color: #ffffff;
+}
+
+.header {
+  background-color: #1a1d21;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #2d3035;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: #ff3366;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.5rem 1rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.theme-toggle {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-profile img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+
+.content {
+  display: flex;
+  padding: 2rem;
+  gap: 2rem;
+}
+
+.filter-section {
+  width: 250px;
+  background-color: #22252a;
+  padding: 1.5rem;
+  border-radius: 8px;
+}
+
+.shift-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.shift-filters label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.main-content {
+  flex: 1;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.search-bar input {
+  flex: 1;
+  max-width: 400px;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #22252a;
+  color: #ffffff;
+}
+
+.add-form-button {
+  background-color: #ff3366;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.overtime-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #22252a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.overtime-table th,
+.overtime-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #2d3035;
+}
+
+.overtime-table th {
+  background-color: #2d3035;
+  font-weight: 500;
+}
+
+.overtime-table tr:hover {
+  background-color: #2a2d32;
+}
+
+.details-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: #ff3366;
+}
+
+/* Placeholder styling */
+::placeholder {
+  color: #6c757d;
+}

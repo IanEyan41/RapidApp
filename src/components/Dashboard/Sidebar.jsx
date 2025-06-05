@@ -16,17 +16,19 @@ const Sidebar = ({ userRole }) => {
     switch (userRole) {
       case "Human Resources":
         return [
-          { icon: "👥", label: "Employee Form" },
-          { icon: "⏰", label: "Overtime Form" },
+          { icon: "👥", label: "Employee Form", path: "/employee-form" },
+          { icon: "⏰", label: "Overtime Form", path: "/overtime-management" },
         ];
       case "Production":
-        return [{ icon: "⏰", label: "Overtime Form" }];
+        return [
+          { icon: "⏰", label: "Overtime Form", path: "/overtime-management" },
+        ];
       case "Transport":
         return [
-          { icon: "⏰", label: "Overtime Form" },
-          { icon: "🚗", label: "Driver Form" },
-          { icon: "🚌", label: "Bus Form" },
-          { icon: "🏢", label: "Vendor Form" },
+          { icon: "⏰", label: "Overtime Form", path: "/overtime-management" },
+          { icon: "🚗", label: "Driver Form", path: "/driver-form" },
+          { icon: "🚌", label: "Bus Form", path: "/bus-form" },
+          { icon: "🏢", label: "Vendor Form", path: "/vendor-form" },
         ];
       default:
         return [];
@@ -68,16 +70,7 @@ const Sidebar = ({ userRole }) => {
                 {isFormsOpen && (
                   <ul className="dropdown-menu">
                     {availableForms.map((form, index) => (
-                      <li
-                        key={index}
-                        onClick={() =>
-                          navigate(
-                            `/forms/${form.label
-                              .toLowerCase()
-                              .replace(" ", "-")}`
-                          )
-                        }
-                      >
+                      <li key={index} onClick={() => navigate(form.path)}>
                         <span className="icon">{form.icon}</span>
                         <span>{form.label}</span>
                       </li>
