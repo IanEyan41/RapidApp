@@ -6,6 +6,7 @@ import { doc, getDoc } from "firebase/firestore";
 import Sidebar from "./Sidebar";
 import StatCard from "./StatCard";
 import NotificationPanel from "./NotificationPanel";
+import globe from "../../Asset/globe.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -42,12 +43,14 @@ const Dashboard = () => {
 
       <div className="main-content">
         <header className="dashboard-header">
-          <h1>{userRole}</h1>
+          <h1 style={{ color: "white" }}>{userRole}</h1>
           <div className="search-bar">
             <input type="text" placeholder="Search Anything..." />
           </div>
           <div className="user-info">
-            <div className="theme-toggle">🌞</div>
+            <div className="theme-toggle">
+              <img src={globe} alt="globe" />
+            </div>
             <span>{userName}</span>
           </div>
         </header>

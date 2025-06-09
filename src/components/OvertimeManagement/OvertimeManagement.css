@@ -38,6 +38,17 @@
   cursor: pointer;
   padding: 0.5rem;
 }
+.logo-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+}
+
+.logo-section img {
+  width: 150px;
+  height: 150px;
+}
 
 .user-profile {
   display: flex;

@@ -1,11 +1,30 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./OvertimeManagement.css";
+import globe from "../../Asset/globe.png";
+import { auth, db } from "../../services/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import OvertimeForm from "./OvertimeForm";
 
 const OvertimeManagement = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedShifts, setSelectedShifts] = useState(["A"]);
+  const [userName, setUserName] = useState("");
+  const [isFormOpen, setIsFormOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const user = auth.currentUser;
+      if (!user) {
+        navigate("/");
+        return;
+      }
+      setUserName(user.email.split("@")[0]); // Using email as name for now
+    };
+
+    fetchUserData();
+  }, [navigate]);
 
   const employeeData = [
     {
@@ -52,8 +71,14 @@ const OvertimeManagement = () => {
     navigate(-1);
   };
 
+  const handleAddFormSubmit = (formData) => {
+    // Here you would typically save the form data to your backend
+    console.log("Form submitted:", formData);
+    setIsFormOpen(false);
+  };
+
   const handleAddForm = () => {
-    navigate("/overtime-form");
+    setIsFormOpen(true);
   };
 
   return (
@@ -63,12 +88,13 @@ const OvertimeManagement = () => {
           <button className="back-button" onClick={handleBack}>
             ← Back
           </button>
-          <h1>Overtime Management</h1>
+          <h1 style={{ color: "white" }}>Overtime Management</h1>
           <div className="header-right">
-            <button className="theme-toggle">🌞</button>
+            <button className="theme-toggle">
+              <img src={globe} alt="globe" />
+            </button>
             <div className="user-profile">
-              <img src="/profile-placeholder.jpg" alt="User" />
-              <span>Mohammed Azhar Bin Ismail</span>
+              <span>{userName}</span>
             </div>
           </div>
         </div>
@@ -145,6 +171,12 @@ const OvertimeManagement = () => {
           </table>
         </div>
       </div>
+
+      <OvertimeForm
+        isOpen={isFormOpen}
+        onClose={() => setIsFormOpen(false)}
+        onSubmit={handleAddFormSubmit}
+      />
     </div>
   );
 };

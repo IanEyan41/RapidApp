@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../services/firebase";
+import logo from "../../Asset/Amtel_logo.png";
 
 const Sidebar = ({ userRole }) => {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const Sidebar = ({ userRole }) => {
   return (
     <div className="sidebar">
       <div className="logo-section">
-        <h2>{userRole}</h2>
+        <img src={logo} alt="logo" />
       </div>
 
       <div className="menu-sections">
@@ -101,9 +102,7 @@ const Sidebar = ({ userRole }) => {
         </div>
       </div>
 
-      <div className="powered-by">
-        <small>Powered By</small>
-      </div>
+    
     </div>
   );
 };
