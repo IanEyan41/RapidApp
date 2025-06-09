@@ -75,17 +75,32 @@ h1 {
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  color: #666;
+  color: #000;
   font-size: 14px;
 }
 
-.form-group input {
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group input[type="tel"] {
   width: 100%;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 14px;
   transition: border-color 0.3s;
+  color: #000;
+  background-color: white;
+}
+
+.form-group input[type="radio"] {
+  width: auto;
+  background: none;
+  border: none;
+}
+
+.form-group input::placeholder {
+  color: rgba(0, 0, 0, 0.5);
 }
 
 .form-group input:focus {
@@ -179,7 +194,7 @@ h1 {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #333;
+  color: #000 !important;
   font-size: 14px;
   cursor: pointer;
 }
@@ -316,7 +331,7 @@ h1 {
 
 .back-to-login-btn:hover {
   background-color: rgba(229, 57, 53, 0.1);
-  }
+}
 
 .back-to-login-btn:focus {
   outline: none;
