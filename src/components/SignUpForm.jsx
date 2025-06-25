@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
 import amtelLogo from "../Asset/Amtel_logo.png";
-import { registerWithEmailAndPassword } from "../services/firebase";
+import { createAdminUser, auth } from "../services/firebase";
 import SuccessPopup from "./SuccessPopup";
 
 const SignUpForm = () => {
@@ -48,11 +48,22 @@ const SignUpForm = () => {
     setLoading(true);
 
     try {
+      if (!auth.currentUser) {
+        setError("You must be logged in as SuperAdmin to create admin users");
+        setLoading(false);
+        return;
+      }
+
       const {
         user,
         error: registrationError,
-        isAdmin,
-      } = await registerWithEmailAndPassword(email, password, department);
+        role,
+      } = await createAdminUser(
+        email,
+        password,
+        department,
+        auth.currentUser.uid
+      );
 
       if (registrationError) {
         setError(registrationError);
@@ -60,11 +71,8 @@ const SignUpForm = () => {
       }
 
       if (user) {
-        const role = isAdmin ? "admin" : department;
         setSuccessMessage(
-          `User ${email} has been created successfully with ${role} role!${
-            isAdmin ? " This is the admin account." : ""
-          }`
+          `Admin user ${email} has been created successfully for ${department} department!`
         );
         setShowSuccessPopup(true);
       }
@@ -85,7 +93,7 @@ const SignUpForm = () => {
     <>
       <div className="login-form signup-form">
         <img src={amtelLogo} alt="Amtel Logo" className="logo" />
-        <h1>Create New User</h1>
+        <h1>Create Admin User</h1>
 
         <form onSubmit={handleSubmit}>
           {error && <div className="error-message">{error}</div>}
@@ -96,7 +104,7 @@ const SignUpForm = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter email"
+              placeholder="Enter admin email"
               required
             />
           </div>
@@ -146,15 +154,15 @@ const SignUpForm = () => {
           </div>
 
           <button type="submit" className="sign-in-btn" disabled={loading}>
-            {loading ? "Creating User..." : "Create User"}
+            {loading ? "Creating Admin..." : "Create Admin User"}
           </button>
 
           <button
             type="button"
             className="back-to-login-btn"
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/dashboard")}
           >
-            Back to Sign In
+            Back to Dashboard
           </button>
         </form>
       </div>

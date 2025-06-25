@@ -6,12 +6,16 @@ import { doc, getDoc } from "firebase/firestore";
 import Sidebar from "./Sidebar";
 import StatCard from "./StatCard";
 import NotificationPanel from "./NotificationPanel";
-import globe from "../../Asset/globe.png";
+import { useTheme } from "../../services/ThemeContext";
+import { FaUsers, FaUserPlus, FaClock, FaExchangeAlt } from "react-icons/fa";
+import { BsSun, BsMoon } from "react-icons/bs";
+import { FaUserCircle } from "react-icons/fa";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState("");
   const [userName, setUserName] = useState("");
+  const { theme, toggleTheme } = useTheme();
   const [stats, setStats] = useState({
     employees: { value: 1234, change: "95% from total" },
     newHires: { value: 30, change: "10% more from last month" },
@@ -38,47 +42,56 @@ const Dashboard = () => {
   }, [navigate]);
 
   return (
-    <div className="dashboard-container">
+    <div className={`dashboard-container ${theme}-theme`}>
       <Sidebar userRole={userRole} />
 
       <div className="main-content">
         <header className="dashboard-header">
-          <h1 style={{ color: "white" }}>{userRole}</h1>
-          <div className="search-bar">
-            <input type="text" placeholder="Search Anything..." />
-          </div>
-          <div className="user-info">
-            <div className="theme-toggle">
-              <img src={globe} alt="globe" />
+          <h1>{userRole}</h1>
+          <div className="header-controls">
+            <div className="search-bar">
+              <input type="text" placeholder="Search Anything..." />
             </div>
-            <span>{userName}</span>
+            <div className="theme-toggle" onClick={toggleTheme}>
+              {theme === "dark" ? (
+                <BsSun className="theme-icon" />
+              ) : (
+                <BsMoon className="theme-icon" />
+              )}
+            </div>
+            <div className="user-profile">
+              <div className="user-avatar">
+                <FaUserCircle className="user-icon" />
+              </div>
+              <span className="user-name">{userName}</span>
+            </div>
           </div>
         </header>
 
         <div className="stats-container">
           <StatCard
-            icon="👥"
+            icon={<FaUsers />}
             title="Active Employees"
             value={stats.employees.value}
             change={stats.employees.change}
             color="blue"
           />
           <StatCard
-            icon="👤"
+            icon={<FaUserPlus />}
             title="New Hires"
             value={stats.newHires.value}
             change={stats.newHires.change}
             color="green"
           />
           <StatCard
-            icon="⏰"
+            icon={<FaClock />}
             title="Overtime Applied"
             value={stats.overtime.value}
             change={stats.overtime.change}
             color="red"
           />
           <StatCard
-            icon="🔄"
+            icon={<FaExchangeAlt />}
             title="Current Shift"
             value={stats.currentShift.value}
             change={stats.currentShift.change}

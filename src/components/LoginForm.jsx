@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "../App.css";
 import amtelLogo from "../Asset/Amtel_logo.png";
 import { loginWithEmailAndPassword } from "../services/firebase";
@@ -11,6 +11,7 @@ const LoginForm = () => {
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -18,15 +19,22 @@ const LoginForm = () => {
     setLoading(true);
 
     try {
-      const { user, error } = await loginWithEmailAndPassword(
+      const { user, role, error } = await loginWithEmailAndPassword(
         username,
         password
       );
+
       if (error) {
         setError(error);
+      } else if (isSuperAdmin && role !== "superadmin") {
+        setError("Access denied. Only SuperAdmin users are allowed.");
       } else {
-        // Navigate to dashboard after successful login
-        navigate("/dashboard");
+        // Navigate based on user type
+        if (isSuperAdmin && role === "superadmin") {
+          navigate("/admin/register");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");
@@ -35,10 +43,34 @@ const LoginForm = () => {
     }
   };
 
+  const toggleUserType = (type) => {
+    setIsSuperAdmin(type === "superadmin");
+    setError(""); // Clear any previous errors
+  };
+
   return (
     <div className="login-form login-only">
+      <div className="login-toggle-container">
+        <div className="segmented-control">
+          <button
+            type="button"
+            className={!isSuperAdmin ? "segment active" : "segment"}
+            onClick={() => toggleUserType("admin")}
+          >
+            Admin
+          </button>
+          <button
+            type="button"
+            className={isSuperAdmin ? "segment active" : "segment"}
+            onClick={() => toggleUserType("superadmin")}
+          >
+            Super Admin
+          </button>
+        </div>
+      </div>
+
       <img src={amtelLogo} alt="Amtel Logo" className="logo" />
-      <h1>Welcome!</h1>
+      <h1>{isSuperAdmin ? "SuperAdmin Portal" : "Welcome!"}</h1>
 
       <form onSubmit={handleSubmit}>
         {error && <div className="error-message">{error}</div>}
@@ -49,7 +81,9 @@ const LoginForm = () => {
             type="email"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="Enter your email"
+            placeholder={
+              isSuperAdmin ? "Enter SuperAdmin email" : "Enter your email"
+            }
             required
           />
         </div>
@@ -61,34 +95,46 @@ const LoginForm = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
+              placeholder={
+                isSuperAdmin
+                  ? "Enter SuperAdmin password"
+                  : "Enter your password"
+              }
               required
             />
           </div>
         </div>
 
-        <div className="form-options">
-          <label className="remember-me">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-            />
-            Remember me
-          </label>
-          <a href="#" className="forgot-password">
-            Forgot password?
-          </a>
-        </div>
+        {!isSuperAdmin && (
+          <div className="form-options">
+            <label className="remember-me">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              Remember me
+            </label>
+            <Link to="/forgot-password" className="forgot-password">
+              Forgot password?
+            </Link>
+          </div>
+        )}
 
         <button type="submit" className="sign-in-btn" disabled={loading}>
-          {loading ? "Signing in..." : "Sign In"}
+          {loading
+            ? "Signing in..."
+            : isSuperAdmin
+            ? "Access Admin Panel"
+            : "Sign In"}
         </button>
       </form>
 
-      <p className="create-account">
-        <a href="#">Terms and Conditions</a>
-      </p>
+      {!isSuperAdmin && (
+        <p className="create-account">
+          <a href="#">Terms and Conditions</a>
+        </p>
+      )}
     </div>
   );
 };

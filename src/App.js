@@ -8,18 +8,28 @@ import {
 import "./App.css";
 import LoginForm from "./components/LoginForm";
 import SignUpForm from "./components/SignUpForm";
+import ForgotPassword from "./components/ForgotPassword";
 import Dashboard from "./components/Dashboard/Dashboard";
 import OvertimeManagement from "./components/OvertimeManagement/OvertimeManagement";
 import { auth } from "./services/firebase";
 import { onAuthStateChanged } from "firebase/auth";
+import { getUserRole } from "./services/firebase";
+import { ThemeProvider } from "./services/ThemeContext";
 
 function App() {
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setUser(user);
+      if (user) {
+        const role = await getUserRole(user.uid);
+        setUserRole(role);
+      } else {
+        setUserRole(null);
+      }
       setLoading(false);
     });
 
@@ -31,17 +41,55 @@ function App() {
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            user ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
+    <ThemeProvider>
+      <Router>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              user ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <div className="App">
+                  <div className="login-container">
+                    <LoginForm />
+                    <div className="login-image">
+                      <img
+                        src="/images/Environment.jpg"
+                        alt="Office Environment"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )
+            }
+          />
+          <Route
+            path="/admin/register"
+            element={
+              user && userRole === "superadmin" ? (
+                <div className="App">
+                  <div className="login-container">
+                    <SignUpForm />
+                    <div className="login-image">
+                      <img
+                        src="/images/Environment.jpg"
+                        alt="Office Environment"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Navigate to="/" replace />
+              )
+            }
+          />
+          <Route
+            path="/forgot-password"
+            element={
               <div className="App">
                 <div className="login-container">
-                  <LoginForm />
+                  <ForgotPassword />
                   <div className="login-image">
                     <img
                       src="/images/Environment.jpg"
@@ -50,33 +98,22 @@ function App() {
                   </div>
                 </div>
               </div>
-            )
-          }
-        />
-        <Route
-          path="/admin/register"
-          element={
-            <div className="App">
-              <div className="login-container">
-                <SignUpForm />
-                <div className="login-image">
-                  <img src="/images/Environment.jpg" alt="Office Environment" />
-                </div>
-              </div>
-            </div>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={user ? <Dashboard /> : <Navigate to="/" replace />}
-        />
-        <Route
-          path="/overtime-management"
-          element={user ? <OvertimeManagement /> : <Navigate to="/" replace />}
-        />
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={user ? <Dashboard /> : <Navigate to="/" replace />}
+          />
+          <Route
+            path="/overtime-management"
+            element={
+              user ? <OvertimeManagement /> : <Navigate to="/" replace />
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
 

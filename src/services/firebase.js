@@ -12,6 +12,8 @@ import {
   getDoc,
   collection,
   getDocs,
+  query,
+  where,
 } from "firebase/firestore";
 
 // Your Firebase configuration
@@ -59,7 +61,7 @@ export const registerWithEmailAndPassword = async (
       password
     );
 
-    // Check if this is the first user (will be admin)
+    // Check if this is the first user (will be superadmin)
     const usersRef = collection(db, "users");
     const usersSnapshot = await getDocs(usersRef);
     const isFirstUser = usersSnapshot.empty;
@@ -67,7 +69,7 @@ export const registerWithEmailAndPassword = async (
     // Set the user's role in Firestore
     await setDoc(doc(db, "users", userCredential.user.uid), {
       email,
-      role: isFirstUser ? "admin" : department, // First user is admin
+      role: isFirstUser ? "superadmin" : department, // First user is superadmin
       createdAt: new Date().toISOString(),
     });
 
@@ -75,10 +77,74 @@ export const registerWithEmailAndPassword = async (
       user: userCredential.user,
       error: null,
       isAdmin: isFirstUser,
+      role: isFirstUser ? "superadmin" : department,
     };
   } catch (error) {
     console.error("Registration error:", error);
     let errorMessage = "An error occurred during registration.";
+
+    // Firebase error codes
+    switch (error.code) {
+      case "auth/email-already-in-use":
+        errorMessage = "This email is already registered.";
+        break;
+      case "auth/invalid-email":
+        errorMessage = "Invalid email address.";
+        break;
+      case "auth/operation-not-allowed":
+        errorMessage = "Email/password accounts are not enabled.";
+        break;
+      case "auth/weak-password":
+        errorMessage = "Password is too weak.";
+        break;
+      default:
+        errorMessage = error.message;
+    }
+
+    return { user: null, error: errorMessage };
+  }
+};
+
+export const createAdminUser = async (
+  email,
+  password,
+  department,
+  createdByUid
+) => {
+  try {
+    // Verify the creator is a SuperAdmin
+    const creatorRole = await getUserRole(createdByUid);
+    if (creatorRole !== "superadmin") {
+      return {
+        user: null,
+        error: "Only SuperAdmin users can create admin accounts",
+      };
+    }
+
+    // Create the user
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+
+    // Set the user's role as admin
+    await setDoc(doc(db, "users", userCredential.user.uid), {
+      email,
+      role: "admin",
+      department,
+      createdBy: createdByUid,
+      createdAt: new Date().toISOString(),
+    });
+
+    return {
+      user: userCredential.user,
+      error: null,
+      role: "admin",
+    };
+  } catch (error) {
+    console.error("Admin creation error:", error);
+    let errorMessage = "An error occurred during admin creation.";
 
     // Firebase error codes
     switch (error.code) {
@@ -108,6 +174,19 @@ export const logoutUser = async () => {
     return { error: null };
   } catch (error) {
     return { error: error.message };
+  }
+};
+
+// Check if SuperAdmin exists
+export const checkSuperAdminExists = async () => {
+  try {
+    const usersRef = collection(db, "users");
+    const superAdminQuery = query(usersRef, where("role", "==", "superadmin"));
+    const querySnapshot = await getDocs(superAdminQuery);
+    return !querySnapshot.empty;
+  } catch (error) {
+    console.error("Error checking for SuperAdmin:", error);
+    return false;
   }
 };
 

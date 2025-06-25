@@ -2,6 +2,21 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../services/firebase";
 import logo from "../../Asset/Amtel_logo.png";
+import {
+  FaHome,
+  FaChartBar,
+  FaFileAlt,
+  FaUserAlt,
+  FaCog,
+  FaSignOutAlt,
+  FaUsers,
+  FaClock,
+  FaCar,
+  FaBus,
+  FaBuilding,
+  FaChevronDown,
+  FaChevronRight,
+} from "react-icons/fa";
 
 const Sidebar = ({ userRole }) => {
   const navigate = useNavigate();
@@ -17,19 +32,31 @@ const Sidebar = ({ userRole }) => {
     switch (userRole) {
       case "Human Resources":
         return [
-          { icon: "👥", label: "Employee Form", path: "/employee-form" },
-          { icon: "⏰", label: "Overtime Form", path: "/overtime-management" },
+          { icon: <FaUsers />, label: "Employee Form", path: "/employee-form" },
+          {
+            icon: <FaClock />,
+            label: "Overtime Form",
+            path: "/overtime-management",
+          },
         ];
       case "Production":
         return [
-          { icon: "⏰", label: "Overtime Form", path: "/overtime-management" },
+          {
+            icon: <FaClock />,
+            label: "Overtime Form",
+            path: "/overtime-management",
+          },
         ];
       case "Transport":
         return [
-          { icon: "⏰", label: "Overtime Form", path: "/overtime-management" },
-          { icon: "🚗", label: "Driver Form", path: "/driver-form" },
-          { icon: "🚌", label: "Bus Form", path: "/bus-form" },
-          { icon: "🏢", label: "Vendor Form", path: "/vendor-form" },
+          {
+            icon: <FaClock />,
+            label: "Overtime Form",
+            path: "/overtime-management",
+          },
+          { icon: <FaCar />, label: "Driver Form", path: "/driver-form" },
+          { icon: <FaBus />, label: "Bus Form", path: "/bus-form" },
+          { icon: <FaBuilding />, label: "Vendor Form", path: "/vendor-form" },
         ];
       default:
         return [];
@@ -49,11 +76,15 @@ const Sidebar = ({ userRole }) => {
           <h3>General</h3>
           <ul>
             <li className="active">
-              <span className="icon">🏠</span>
+              <span className="icon">
+                <FaHome />
+              </span>
               <span>Home</span>
             </li>
             <li>
-              <span className="icon">📊</span>
+              <span className="icon">
+                <FaChartBar />
+              </span>
               <span>Dashboard</span>
             </li>
             {availableForms.length > 0 && (
@@ -62,10 +93,12 @@ const Sidebar = ({ userRole }) => {
                   className={`dropdown-trigger ${isFormsOpen ? "open" : ""}`}
                   onClick={() => setIsFormsOpen(!isFormsOpen)}
                 >
-                  <span className="icon">📝</span>
+                  <span className="icon">
+                    <FaFileAlt />
+                  </span>
                   <span>Forms</span>
                   <span className="dropdown-arrow">
-                    {isFormsOpen ? "▼" : "▶"}
+                    {isFormsOpen ? <FaChevronDown /> : <FaChevronRight />}
                   </span>
                 </li>
                 {isFormsOpen && (
@@ -87,22 +120,26 @@ const Sidebar = ({ userRole }) => {
           <h3>Support</h3>
           <ul>
             <li>
-              <span className="icon">👤</span>
+              <span className="icon">
+                <FaUserAlt />
+              </span>
               <span>Profile</span>
             </li>
             <li>
-              <span className="icon">⚙️</span>
+              <span className="icon">
+                <FaCog />
+              </span>
               <span>Settings</span>
             </li>
             <li onClick={handleLogout}>
-              <span className="icon">🚪</span>
+              <span className="icon">
+                <FaSignOutAlt />
+              </span>
               <span>Logout</span>
             </li>
           </ul>
         </div>
       </div>
-
-    
     </div>
   );
 };
