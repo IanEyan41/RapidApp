@@ -15,6 +15,9 @@ import { auth } from "./services/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { getUserRole } from "./services/firebase";
 import { ThemeProvider } from "./services/ThemeContext";
+import { PopupProvider } from "./services/PopupContext";
+import PowerBIDashboard from "./components/Dashboard/PowerBIDashboard";
+import SuccessPopup from "./components/SuccessPopup";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -42,17 +45,55 @@ function App() {
 
   return (
     <ThemeProvider>
-      <Router>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              user ? (
-                <Navigate to="/dashboard" replace />
-              ) : (
+      <PopupProvider>
+        <Router>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                user ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <div className="App">
+                    <div className="login-container">
+                      <LoginForm />
+                      <div className="login-image">
+                        <img
+                          src="/images/Environment.jpg"
+                          alt="Office Environment"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )
+              }
+            />
+            <Route
+              path="/admin/register"
+              element={
+                user && userRole === "superadmin" ? (
+                  <div className="App">
+                    <div className="login-container">
+                      <SignUpForm />
+                      <div className="login-image">
+                        <img
+                          src="/images/Environment.jpg"
+                          alt="Office Environment"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <Navigate to="/" replace />
+                )
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
                 <div className="App">
                   <div className="login-container">
-                    <LoginForm />
+                    <ForgotPassword />
                     <div className="login-image">
                       <img
                         src="/images/Environment.jpg"
@@ -61,58 +102,29 @@ function App() {
                     </div>
                   </div>
                 </div>
-              )
-            }
-          />
-          <Route
-            path="/admin/register"
-            element={
-              user && userRole === "superadmin" ? (
-                <div className="App">
-                  <div className="login-container">
-                    <SignUpForm />
-                    <div className="login-image">
-                      <img
-                        src="/images/Environment.jpg"
-                        alt="Office Environment"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <Navigate to="/" replace />
-              )
-            }
-          />
-          <Route
-            path="/forgot-password"
-            element={
-              <div className="App">
-                <div className="login-container">
-                  <ForgotPassword />
-                  <div className="login-image">
-                    <img
-                      src="/images/Environment.jpg"
-                      alt="Office Environment"
-                    />
-                  </div>
-                </div>
-              </div>
-            }
-          />
-          <Route
-            path="/dashboard"
-            element={user ? <Dashboard /> : <Navigate to="/" replace />}
-          />
-          <Route
-            path="/overtime-management"
-            element={
-              user ? <OvertimeManagement /> : <Navigate to="/" replace />
-            }
-          />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      </Router>
+              }
+            />
+            <Route
+              path="/dashboard"
+              element={user ? <Dashboard /> : <Navigate to="/" replace />}
+            />
+            <Route
+              path="/powerbi-dashboard"
+              element={
+                user ? <PowerBIDashboard /> : <Navigate to="/" replace />
+              }
+            />
+            <Route
+              path="/overtime-management"
+              element={
+                user ? <OvertimeManagement /> : <Navigate to="/" replace />
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+          <SuccessPopup />
+        </Router>
+      </PopupProvider>
     </ThemeProvider>
   );
 }

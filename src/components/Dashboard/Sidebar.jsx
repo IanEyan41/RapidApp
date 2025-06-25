@@ -16,6 +16,7 @@ import {
   FaBuilding,
   FaChevronDown,
   FaChevronRight,
+  FaUserPlus,
 } from "react-icons/fa";
 
 const Sidebar = ({ userRole }) => {
@@ -75,18 +76,26 @@ const Sidebar = ({ userRole }) => {
         <div className="menu-section">
           <h3>General</h3>
           <ul>
-            <li className="active">
+            <li onClick={() => navigate("/")}>
               <span className="icon">
                 <FaHome />
               </span>
               <span>Home</span>
             </li>
-            <li>
+            <li onClick={() => navigate("/powerbi-dashboard")}>
               <span className="icon">
                 <FaChartBar />
               </span>
-              <span>Dashboard</span>
+              <span>Analytics Dashboard</span>
             </li>
+            {userRole === "superadmin" && (
+              <li onClick={() => navigate("/admin/register")}>
+                <span className="icon">
+                  <FaUserPlus />
+                </span>
+                <span>Register Admin</span>
+              </li>
+            )}
             {availableForms.length > 0 && (
               <>
                 <li

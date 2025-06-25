@@ -160,7 +160,7 @@ const SignUpForm = () => {
           <button
             type="button"
             className="back-to-login-btn"
-            onClick={() => navigate("/dashboard")}
+            onClick={() => navigate("/powerbi-dashboard")}
           >
             Back to Dashboard
           </button>
