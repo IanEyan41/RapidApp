@@ -17,6 +17,7 @@ import { getUserRole } from "./services/firebase";
 import { ThemeProvider } from "./services/ThemeContext";
 import { PopupProvider } from "./services/PopupContext";
 import PowerBIDashboard from "./components/Dashboard/PowerBIDashboard";
+import Profile from "./components/Profile/Profile";
 import SuccessPopup from "./components/SuccessPopup";
 
 function App() {
@@ -113,6 +114,10 @@ function App() {
               element={
                 user ? <PowerBIDashboard /> : <Navigate to="/" replace />
               }
+            />
+            <Route
+              path="/profile"
+              element={user ? <Profile /> : <Navigate to="/" replace />}
             />
             <Route
               path="/overtime-management"

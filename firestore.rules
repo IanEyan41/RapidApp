@@ -8,6 +8,14 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
     
+    // Overtime Management collection rules
+    match /overtime-management/{document} {
+      // Allow read/write for authenticated users
+      allow create: if request.auth != null;
+      allow read, update: if request.auth != null;
+      allow delete: if request.auth != null && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['Human Resources', 'superadmin'];
+    }
+    
     // Default deny all other access
     match /{document=**} {
       allow read, write: if false;

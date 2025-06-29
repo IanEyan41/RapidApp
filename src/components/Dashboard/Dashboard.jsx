@@ -7,7 +7,18 @@ import Sidebar from "./Sidebar";
 import StatCard from "./StatCard";
 import NotificationPanel from "./NotificationPanel";
 import { useTheme } from "../../services/ThemeContext";
-import { FaUsers, FaUserPlus, FaClock, FaExchangeAlt } from "react-icons/fa";
+import {
+  FaUsers,
+  FaUserPlus,
+  FaClock,
+  FaExchangeAlt,
+  FaBuilding,
+  FaCar,
+  FaBus,
+  FaFileAlt,
+  FaPlus,
+  FaChartBar,
+} from "react-icons/fa";
 import { BsSun, BsMoon } from "react-icons/bs";
 import { FaUserCircle } from "react-icons/fa";
 
@@ -33,13 +44,142 @@ const Dashboard = () => {
 
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
-        setUserRole(userDoc.data().role);
-        setUserName(user.email.split("@")[0]); // Using email as name for now
+        const userData = userDoc.data();
+        setUserRole(userData.role);
+
+        // Use name from profile if available, otherwise fallback to email username
+        if (userData.name && userData.name.trim() !== "") {
+          setUserName(userData.name);
+        } else {
+          setUserName(user.email.split("@")[0]);
+        }
       }
     };
 
     fetchUserData();
   }, [navigate]);
+
+  // Get available actions based on user role
+  const getQuickActions = () => {
+    const isSuperAdmin = userRole === "superadmin";
+
+    if (isSuperAdmin) {
+      return [
+        {
+          icon: <FaUserPlus />,
+          label: "Add Admin",
+          path: "/admin/register",
+          color: "#d70000", // Red color
+        },
+      ];
+    }
+
+    const actions = [];
+
+    // Common actions for all admin roles (except superadmin)
+    actions.push({
+      icon: <FaBuilding />,
+      label: "Add New Organization",
+      path: "/organization/new",
+      color: "#d70000",
+    });
+
+    switch (userRole) {
+      case "Human Resources":
+        actions.push(
+          {
+            icon: <FaUsers />,
+            label: "Employee Form",
+            path: "/employee-form",
+            color: "#d70000",
+          },
+          {
+            icon: <FaClock />,
+            label: "Overtime Form",
+            path: "/overtime-management",
+            color: "#d70000",
+          }
+        );
+        break;
+      case "Production":
+        actions.push(
+          {
+            icon: <FaClock />,
+            label: "Overtime Form",
+            path: "/overtime-management",
+            color: "#d70000",
+          },
+          {
+            icon: <FaFileAlt />,
+            label: "Create New Use Case",
+            path: "/use-case/new",
+            color: "#d70000",
+          },
+          {
+            icon: <FaChartBar />,
+            label: "Configure Dashboard Template",
+            path: "/dashboard/configure",
+            color: "#d70000",
+          }
+        );
+        break;
+      case "Transport":
+        actions.push(
+          {
+            icon: <FaClock />,
+            label: "Overtime Form",
+            path: "/overtime-management",
+            color: "#d70000",
+          },
+          {
+            icon: <FaCar />,
+            label: "Driver Form",
+            path: "/driver-form",
+            color: "#d70000",
+          },
+          {
+            icon: <FaBus />,
+            label: "Bus Form",
+            path: "/bus-form",
+            color: "#d70000",
+          },
+          {
+            icon: <FaBuilding />,
+            label: "Vendor Form",
+            path: "/vendor-form",
+            color: "#d70000",
+          },
+          {
+            icon: <FaFileAlt />,
+            label: "Create Web Form",
+            path: "/web-form/new",
+            color: "#d70000",
+          }
+        );
+        break;
+      default:
+        // Default actions for other roles
+        actions.push(
+          {
+            icon: <FaFileAlt />,
+            label: "Create New Use Case",
+            path: "/use-case/new",
+            color: "#d70000",
+          },
+          {
+            icon: <FaFileAlt />,
+            label: "Create Web Form",
+            path: "/web-form/new",
+            color: "#d70000",
+          }
+        );
+        break;
+    }
+
+    return actions;
+  };
+
+  const quickActions = getQuickActions();
 
   return (
     <div className={`dashboard-container ${theme}-theme`}>
@@ -47,7 +187,7 @@ const Dashboard = () => {
 
       <div className="main-content">
         <header className="dashboard-header">
-          <h1>{userRole}</h1>
+          <h1>Home</h1>
           <div className="header-controls">
             <div className="search-bar">
               <input type="text" placeholder="Search Anything..." />
@@ -99,14 +239,20 @@ const Dashboard = () => {
           />
         </div>
 
-        <div className="dashboard-grid">
-          <div className="dashboard-card">
-            <h2>Dashboard</h2>
-            {/* Add dashboard content */}
-          </div>
-          <div className="dashboard-card">
-            <h2>Departments</h2>
-            {/* Add departments content */}
+        <div className="quick-actions-section">
+          <h2>Quick Actions</h2>
+          <div className="quick-actions-grid">
+            {quickActions.map((action, index) => (
+              <div
+                key={index}
+                className="quick-action-card"
+                onClick={() => navigate(action.path)}
+                style={{ backgroundColor: action.color }}
+              >
+                <div className="quick-action-icon">{action.icon}</div>
+                <span className="quick-action-label">{action.label}</span>
+              </div>
+            ))}
           </div>
         </div>
       </div>

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import "./OvertimeForm.css";
+import { db } from "../../services/firebase";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -16,6 +18,8 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
     dateIn: "",
     dateOut: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,9 +29,55 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      // Add timestamp to the form data
+      const overtimeData = {
+        ...formData,
+        createdAt: serverTimestamp(),
+        status: "pending", // Adding a default status
+      };
+
+      // Add document to Firestore
+      const docRef = await addDoc(
+        collection(db, "overtime-management"),
+        overtimeData
+      );
+      console.log("Document written with ID: ", docRef.id);
+
+      // Call the onSubmit prop if provided
+      if (onSubmit) {
+        onSubmit(overtimeData);
+      }
+
+      // Close the form
+      onClose();
+
+      // Reset form
+      setFormData({
+        employeeNumber: "",
+        employeeName: "",
+        phoneNumber: "",
+        email: "",
+        address: "",
+        postalCode: "",
+        shift: "A",
+        department: "Production",
+        location: "",
+        routeCode: "",
+        dateIn: "",
+        dateOut: "",
+      });
+    } catch (err) {
+      console.error("Error adding document: ", err);
+      setError("Failed to submit form. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -43,6 +93,8 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
         </div>
 
         <form onSubmit={handleSubmit}>
+          {error && <div className="error-message">{error}</div>}
+
           <div className="form-section">
             <h3>Employee Details</h3>
 
@@ -55,6 +107,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   value={formData.employeeNumber}
                   onChange={handleChange}
                   placeholder="0007"
+                  required
                 />
               </div>
               <div className="form-group">
@@ -65,6 +118,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   value={formData.employeeName}
                   onChange={handleChange}
                   placeholder="Muhammad Haziq bin Roslan"
+                  required
                 />
               </div>
             </div>
@@ -78,6 +132,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   value={formData.phoneNumber}
                   onChange={handleChange}
                   placeholder="+60 12-345 6789"
+                  required
                 />
               </div>
               <div className="form-group">
@@ -88,6 +143,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   value={formData.email}
                   onChange={handleChange}
                   placeholder="muhammed.haziq43@gmail.com"
+                  required
                 />
               </div>
             </div>
@@ -101,6 +157,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   value={formData.address}
                   onChange={handleChange}
                   placeholder="Lintang Hajjah Rehmah 1, Jelutong, 11600 George Town, Penang,Malaysia"
+                  required
                 />
               </div>
               <div className="form-group">
@@ -111,6 +168,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   value={formData.postalCode}
                   onChange={handleChange}
                   placeholder="43300"
+                  required
                 />
               </div>
             </div>
@@ -121,6 +179,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                 name="shift"
                 value={formData.shift}
                 onChange={handleChange}
+                required
               >
                 <option value="A">A</option>
                 <option value="B">B</option>
@@ -138,6 +197,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   name="department"
                   value={formData.department}
                   onChange={handleChange}
+                  required
                 >
                   <option value="Production">Production</option>
                   <option value="HR">HR</option>
@@ -152,6 +212,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   value={formData.location}
                   onChange={handleChange}
                   placeholder="Production Room 18"
+                  required
                 />
               </div>
             </div>
@@ -167,6 +228,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                 value={formData.routeCode}
                 onChange={handleChange}
                 placeholder="1"
+                required
               />
             </div>
           </div>
@@ -177,21 +239,21 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
               <div className="form-group">
                 <label>Date In</label>
                 <input
-                  type="text"
+                  type="date"
                   name="dateIn"
                   value={formData.dateIn}
                   onChange={handleChange}
-                  placeholder="25/5/2025"
+                  required
                 />
               </div>
               <div className="form-group">
                 <label>Date Out</label>
                 <input
-                  type="text"
+                  type="date"
                   name="dateOut"
                   value={formData.dateOut}
                   onChange={handleChange}
-                  placeholder="25/5/2025"
+                  required
                 />
               </div>
             </div>
@@ -201,8 +263,12 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
             <button type="button" className="cancel-button" onClick={onClose}>
               Cancel
             </button>
-            <button type="submit" className="submit-button">
-              Add
+            <button
+              type="submit"
+              className="submit-button"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Submitting..." : "Add"}
             </button>
           </div>
         </form>

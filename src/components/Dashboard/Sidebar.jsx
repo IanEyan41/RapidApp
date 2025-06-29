@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { logoutUser } from "../../services/firebase";
 import logo from "../../Asset/Amtel_logo.png";
+import LogoutConfirmation from "../LogoutConfirmation";
 import {
   FaHome,
   FaChartBar,
@@ -21,11 +22,22 @@ import {
 
 const Sidebar = ({ userRole }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isFormsOpen, setIsFormsOpen] = useState(false);
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
 
-  const handleLogout = async () => {
+  const handleLogoutClick = () => {
+    setShowLogoutConfirmation(true);
+  };
+
+  const handleLogoutConfirm = async () => {
     await logoutUser();
+    setShowLogoutConfirmation(false);
     navigate("/");
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutConfirmation(false);
   };
 
   // Get forms based on user role
@@ -65,91 +77,116 @@ const Sidebar = ({ userRole }) => {
   };
 
   const availableForms = getFormsByRole();
+  const isHomePage = location.pathname === "/dashboard";
+  const isDashboardPage = location.pathname === "/powerbi-dashboard";
+  const isRegisterPage = location.pathname === "/admin/register";
+  const isProfilePage = location.pathname === "/profile";
+  const isSuperAdmin = userRole === "superadmin";
 
   return (
-    <div className="sidebar">
-      <div className="logo-section">
-        <img src={logo} alt="logo" />
-      </div>
+    <>
+      <div className="sidebar">
+        <div className="logo-section">
+          <img src={logo} alt="logo" />
+        </div>
 
-      <div className="menu-sections">
-        <div className="menu-section">
-          <h3>General</h3>
-          <ul>
-            <li onClick={() => navigate("/")}>
-              <span className="icon">
-                <FaHome />
-              </span>
-              <span>Home</span>
-            </li>
-            <li onClick={() => navigate("/powerbi-dashboard")}>
-              <span className="icon">
-                <FaChartBar />
-              </span>
-              <span>Analytics Dashboard</span>
-            </li>
-            {userRole === "superadmin" && (
-              <li onClick={() => navigate("/admin/register")}>
+        <div className="menu-sections">
+          <div className="menu-section">
+            <h3>General</h3>
+            <ul>
+              <li
+                className={isHomePage ? "active" : ""}
+                onClick={() => navigate("/dashboard")}
+              >
                 <span className="icon">
-                  <FaUserPlus />
+                  <FaHome />
                 </span>
-                <span>Register Admin</span>
+                <span>Home</span>
               </li>
-            )}
-            {availableForms.length > 0 && (
-              <>
+              <li
+                className={isDashboardPage ? "active" : ""}
+                onClick={() => navigate("/powerbi-dashboard")}
+              >
+                <span className="icon">
+                  <FaChartBar />
+                </span>
+                <span>Dashboard</span>
+              </li>
+              {isSuperAdmin && (
                 <li
-                  className={`dropdown-trigger ${isFormsOpen ? "open" : ""}`}
-                  onClick={() => setIsFormsOpen(!isFormsOpen)}
+                  className={isRegisterPage ? "active" : ""}
+                  onClick={() => navigate("/admin/register")}
                 >
                   <span className="icon">
-                    <FaFileAlt />
+                    <FaUserPlus />
                   </span>
-                  <span>Forms</span>
-                  <span className="dropdown-arrow">
-                    {isFormsOpen ? <FaChevronDown /> : <FaChevronRight />}
-                  </span>
+                  <span>Register Admin</span>
                 </li>
-                {isFormsOpen && (
-                  <ul className="dropdown-menu">
-                    {availableForms.map((form, index) => (
-                      <li key={index} onClick={() => navigate(form.path)}>
-                        <span className="icon">{form.icon}</span>
-                        <span>{form.label}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </>
-            )}
-          </ul>
-        </div>
+              )}
+              {availableForms.length > 0 && (
+                <>
+                  <li
+                    className={`dropdown-trigger ${isFormsOpen ? "open" : ""}`}
+                    onClick={() => setIsFormsOpen(!isFormsOpen)}
+                  >
+                    <span className="icon">
+                      <FaFileAlt />
+                    </span>
+                    <span>Forms</span>
+                    <span className="dropdown-arrow">
+                      {isFormsOpen ? <FaChevronDown /> : <FaChevronRight />}
+                    </span>
+                  </li>
+                  {isFormsOpen && (
+                    <ul className="dropdown-menu">
+                      {availableForms.map((form, index) => (
+                        <li key={index} onClick={() => navigate(form.path)}>
+                          <span className="icon">{form.icon}</span>
+                          <span>{form.label}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </>
+              )}
+            </ul>
+          </div>
 
-        <div className="menu-section">
-          <h3>Support</h3>
-          <ul>
-            <li>
-              <span className="icon">
-                <FaUserAlt />
-              </span>
-              <span>Profile</span>
-            </li>
-            <li>
-              <span className="icon">
-                <FaCog />
-              </span>
-              <span>Settings</span>
-            </li>
-            <li onClick={handleLogout}>
-              <span className="icon">
-                <FaSignOutAlt />
-              </span>
-              <span>Logout</span>
-            </li>
-          </ul>
+          <div className="menu-section">
+            <h3>Support</h3>
+            <ul>
+              <li
+                className={isProfilePage ? "active" : ""}
+                onClick={() => navigate("/profile")}
+              >
+                <span className="icon">
+                  <FaUserAlt />
+                </span>
+                <span>Profile</span>
+              </li>
+              <li>
+                <span className="icon">
+                  <FaCog />
+                </span>
+                <span>Settings</span>
+              </li>
+              <li onClick={handleLogoutClick}>
+                <span className="icon">
+                  <FaSignOutAlt />
+                </span>
+                <span>Logout</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
-    </div>
+
+      <LogoutConfirmation
+        isOpen={showLogoutConfirmation}
+        onConfirm={handleLogoutConfirm}
+        onCancel={handleLogoutCancel}
+      />
+    </>
   );
 };
 

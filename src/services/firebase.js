@@ -14,6 +14,7 @@ import {
   getDocs,
   query,
   where,
+  updateDoc,
 } from "firebase/firestore";
 
 // Your Firebase configuration
@@ -109,7 +110,8 @@ export const createAdminUser = async (
   email,
   password,
   department,
-  createdByUid
+  createdByUid,
+  profileData = {}
 ) => {
   try {
     // Verify the creator is a SuperAdmin
@@ -128,13 +130,21 @@ export const createAdminUser = async (
       password
     );
 
-    // Set the user's role as admin
+    // Set the user's role and profile data
     await setDoc(doc(db, "users", userCredential.user.uid), {
       email,
       role: "admin",
       department,
       createdBy: createdByUid,
       createdAt: new Date().toISOString(),
+      name: profileData.name || "",
+      username: profileData.username || "",
+      phoneNumber: profileData.phoneNumber || "",
+      country: profileData.country || "",
+      state: profileData.state || "",
+      city: profileData.city || "",
+      address: profileData.address || "",
+      postalCode: profileData.postalCode || "",
     });
 
     return {
@@ -213,6 +223,41 @@ export const getUserRole = async (userId) => {
   } catch (error) {
     console.error("Error getting user role:", error);
     return null;
+  }
+};
+
+// Profile services
+export const getUserProfile = async (userId) => {
+  try {
+    const userDoc = await getDoc(doc(db, "users", userId));
+    if (userDoc.exists()) {
+      return { profile: userDoc.data(), error: null };
+    }
+    return { profile: null, error: "User profile not found" };
+  } catch (error) {
+    console.error("Error getting user profile:", error);
+    return { profile: null, error: error.message };
+  }
+};
+
+export const updateUserProfile = async (userId, profileData) => {
+  try {
+    const userRef = doc(db, "users", userId);
+    await updateDoc(userRef, {
+      name: profileData.name || "",
+      username: profileData.username || "",
+      phoneNumber: profileData.phoneNumber || "",
+      country: profileData.country || "",
+      state: profileData.state || "",
+      city: profileData.city || "",
+      address: profileData.address || "",
+      postalCode: profileData.postalCode || "",
+      updatedAt: new Date().toISOString(),
+    });
+    return { error: null };
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    return { error: error.message };
   }
 };
 

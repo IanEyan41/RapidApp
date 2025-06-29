@@ -160,3 +160,12 @@
 .form-section h3 {
   color: white;
 }
+
+.error-message {
+  background-color: rgba(255, 0, 0, 0.1);
+  color: #ff3366;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  text-align: center;
+}

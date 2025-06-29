@@ -29,12 +29,8 @@ const LoginForm = () => {
       } else if (isSuperAdmin && role !== "superadmin") {
         setError("Access denied. Only SuperAdmin users are allowed.");
       } else {
-        // Navigate based on user type
-        if (isSuperAdmin && role === "superadmin") {
-          navigate("/admin/register");
-        } else {
-          navigate("/dashboard");
-        }
+        // Navigate all users to dashboard
+        navigate("/dashboard");
       }
     } catch (err) {
       setError("An unexpected error occurred. Please try again.");

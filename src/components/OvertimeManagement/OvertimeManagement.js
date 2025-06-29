@@ -1,79 +1,125 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./OvertimeManagement.css";
-import globe from "../../Asset/globe.png";
 import { auth, db } from "../../services/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  onSnapshot,
+  where,
+  orderBy,
+} from "firebase/firestore";
 import OvertimeForm from "./OvertimeForm";
+import Sidebar from "../Dashboard/Sidebar";
+import { useTheme } from "../../services/ThemeContext";
+import { BsSun, BsMoon } from "react-icons/bs";
+import { FaSearch, FaPlus, FaEllipsisH } from "react-icons/fa";
+import { FiRefreshCw } from "react-icons/fi";
 
 const OvertimeManagement = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedShifts, setSelectedShifts] = useState(["A"]);
-  const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [overtimeData, setOvertimeData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  // Fetch user data
   useEffect(() => {
     const fetchUserData = async () => {
-      const user = auth.currentUser;
-      if (!user) {
-        navigate("/");
-        return;
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          navigate("/");
+          return;
+        }
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data().role);
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Failed to fetch user data");
       }
-      setUserName(user.email.split("@")[0]); // Using email as name for now
     };
 
     fetchUserData();
   }, [navigate]);
 
-  const employeeData = [
-    {
-      id: "0001",
-      name: "Meng Kang",
-      date: "25/4/2025 - 25/4/2025",
-      time: "07:00 - 1400",
-    },
-    {
-      id: "0002",
-      name: "Vishnu",
-      date: "25/4/2025 - 25/4/2025",
-      time: "0700/1400",
-    },
-    {
-      id: "0005",
-      name: "Lolly",
-      date: "25/4/2025 - 25/4/2025",
-      time: "0700/1400",
-    },
-    {
-      id: "0009",
-      name: "Jia Hui",
-      date: "25/4/2025 - 25/4/2025",
-      time: "0700/1400",
-    },
-    {
-      id: "00010",
-      name: "Meng Kang",
-      date: "25/4/2025 - 25/4/2025",
-      time: "0700/1400",
-    },
-  ];
+  // Set up real-time listener for overtime data
+  useEffect(() => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Create query for overtime data
+      const overtimeRef = collection(db, "overtime-management");
+
+      // Basic query with just ordering
+      const baseQuery = query(overtimeRef, orderBy("createdAt", "desc"));
+
+      // Set up real-time listener
+      const unsubscribe = onSnapshot(
+        baseQuery,
+        (snapshot) => {
+          const data = snapshot.docs
+            .map((doc) => ({
+              id: doc.id,
+              ...doc.data(),
+            }))
+            // Filter by shift in JavaScript instead of in query
+            .filter((doc) => selectedShifts.includes(doc.shift));
+
+          setOvertimeData(data);
+          setIsLoading(false);
+        },
+        (err) => {
+          console.error("Error fetching overtime data:", err);
+          setError(
+            "Failed to fetch overtime data. Please try refreshing the page."
+          );
+          setIsLoading(false);
+        }
+      );
+
+      return () => unsubscribe();
+    } catch (err) {
+      console.error("Error setting up listener:", err);
+      setError(
+        "Failed to set up data listener. Please try refreshing the page."
+      );
+      setIsLoading(false);
+    }
+  }, [selectedShifts]);
+
+  // Filter data based on search query
+  const filteredData = overtimeData.filter(
+    (entry) =>
+      entry.employeeName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      entry.employeeNumber?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const handleShiftToggle = (shift) => {
     if (selectedShifts.includes(shift)) {
-      setSelectedShifts(selectedShifts.filter((s) => s !== shift));
+      // Don't allow deselecting if it's the last selected shift
+      if (selectedShifts.length > 1) {
+        setSelectedShifts(selectedShifts.filter((s) => s !== shift));
+      }
     } else {
       setSelectedShifts([...selectedShifts, shift]);
     }
   };
 
   const handleBack = () => {
-    navigate(-1);
+    navigate("/dashboard");
   };
 
   const handleAddFormSubmit = (formData) => {
-    // Here you would typically save the form data to your backend
-    console.log("Form submitted:", formData);
     setIsFormOpen(false);
   };
 
@@ -81,94 +127,138 @@ const OvertimeManagement = () => {
     setIsFormOpen(true);
   };
 
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString();
+  };
+
   return (
-    <div className="overtime-management">
-      <header className="header">
-        <div className="header-content">
-          <button className="back-button" onClick={handleBack}>
-            ← Back
-          </button>
-          <h1 style={{ color: "white" }}>Overtime Management</h1>
-          <div className="header-right">
-            <button className="theme-toggle">
-              <img src={globe} alt="globe" />
-            </button>
-            <div className="user-profile">
-              <span>{userName}</span>
+    <div className={`ot-management-container ${theme}-theme`}>
+      <Sidebar userRole={userRole} />
+      <div className="ot-main-content">
+        <header className="ot-header">
+          <h1>Overtime Management</h1>
+          <div className="header-controls-ot">
+            <div className="theme-toggle-ot" onClick={toggleTheme}>
+              {theme === "dark" ? (
+                <BsSun className="theme-icon-ot" />
+              ) : (
+                <BsMoon className="theme-icon-ot" />
+              )}
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="content">
-        <div className="filter-section">
-          <h2>Filter By</h2>
-          <div className="shift-filters">
-            <h3>Shift</h3>
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedShifts.includes("A")}
-                onChange={() => handleShiftToggle("A")}
-              />
-              A
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedShifts.includes("B")}
-                onChange={() => handleShiftToggle("B")}
-              />
-              B
-            </label>
-            <label>
-              <input
-                type="checkbox"
-                checked={selectedShifts.includes("C")}
-                onChange={() => handleShiftToggle("C")}
-              />
-              C
-            </label>
-          </div>
-        </div>
+        <button className="ot-back-button" onClick={handleBack}>
+          ← Back
+        </button>
 
-        <div className="main-content">
-          <div className="search-bar">
-            <input
-              type="text"
-              placeholder="Search Employee Name"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <button className="add-form-button" onClick={handleAddForm}>
-              + Add Form
-            </button>
+        <div className="ot-content-area">
+          <div className="ot-filter-section">
+            <div className="ot-filter-header">
+              <h3>Filter By</h3>
+              <button
+                className="ot-refresh-button"
+                onClick={() => setSelectedShifts(["A"])}
+              >
+                <FiRefreshCw />
+              </button>
+            </div>
+            <div className="ot-shift-filters">
+              <h4>Shift</h4>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={selectedShifts.includes("A")}
+                  onChange={() => handleShiftToggle("A")}
+                />
+                A
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={selectedShifts.includes("B")}
+                  onChange={() => handleShiftToggle("B")}
+                />
+                B
+              </label>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={selectedShifts.includes("C")}
+                  onChange={() => handleShiftToggle("C")}
+                />
+                C
+              </label>
+            </div>
           </div>
 
-          <table className="overtime-table">
-            <thead>
-              <tr>
-                <th>Employee ID</th>
-                <th>Name</th>
-                <th>Date (In/Out)</th>
-                <th>Time (In/Out)</th>
-                <th>Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              {employeeData.map((employee) => (
-                <tr key={employee.id}>
-                  <td>{employee.id}</td>
-                  <td>{employee.name}</td>
-                  <td>{employee.date}</td>
-                  <td>{employee.time}</td>
-                  <td>
-                    <button className="details-button">⋮</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="ot-table-section">
+            <div className="ot-search-bar">
+              <FaSearch className="ot-search-icon" />
+              <input
+                type="text"
+                placeholder="Search Employee Name or ID"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              <button className="ot-add-form-button" onClick={handleAddForm}>
+                <FaPlus /> Add Form
+              </button>
+            </div>
+
+            {error && <div className="ot-error-message">{error}</div>}
+
+            {isLoading ? (
+              <div className="ot-loading">Loading...</div>
+            ) : (
+              <table className="ot-overtime-table">
+                <thead>
+                  <tr>
+                    <th>Employee ID</th>
+                    <th>Name</th>
+                    <th>Date (In/Out)</th>
+                    <th>Shift</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredData.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" className="no-data">
+                        No overtime requests found
+                      </td>
+                    </tr>
+                  ) : (
+                    filteredData.map((entry) => (
+                      <tr key={entry.id}>
+                        <td>{entry.employeeNumber}</td>
+                        <td>{entry.employeeName}</td>
+                        <td>{`${formatDate(entry.dateIn)} - ${formatDate(
+                          entry.dateOut
+                        )}`}</td>
+                        <td>{entry.shift}</td>
+                        <td>{entry.department}</td>
+                        <td>
+                          <span className={`status-badge ${entry.status}`}>
+                            {entry.status}
+                          </span>
+                        </td>
+                        <td>
+                          <button className="ot-details-button">
+                            <FaEllipsisH />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
       </div>
 

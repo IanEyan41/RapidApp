@@ -11,6 +11,14 @@ const SignUpForm = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [department, setDepartment] = useState("");
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [country, setCountry] = useState("");
+  const [state, setState] = useState("");
+  const [city, setCity] = useState("");
+  const [address, setAddress] = useState("");
+  const [postalCode, setPostalCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
@@ -23,6 +31,14 @@ const SignUpForm = () => {
     setPassword("");
     setConfirmPassword("");
     setDepartment("");
+    setName("");
+    setUsername("");
+    setPhoneNumber("");
+    setCountry("");
+    setState("");
+    setCity("");
+    setAddress("");
+    setPostalCode("");
     setError("");
   };
 
@@ -54,6 +70,17 @@ const SignUpForm = () => {
         return;
       }
 
+      const profileData = {
+        name,
+        username,
+        phoneNumber,
+        country,
+        state,
+        city,
+        address,
+        postalCode,
+      };
+
       const {
         user,
         error: registrationError,
@@ -62,7 +89,8 @@ const SignUpForm = () => {
         email,
         password,
         department,
-        auth.currentUser.uid
+        auth.currentUser.uid,
+        profileData
       );
 
       if (registrationError) {
@@ -99,6 +127,26 @@ const SignUpForm = () => {
           {error && <div className="error-message">{error}</div>}
 
           <div className="form-group">
+            <label>Name</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter full name"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Username</label>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              placeholder="Enter username"
+            />
+          </div>
+
+          <div className="form-group">
             <label>Email</label>
             <input
               type="email"
@@ -106,6 +154,16 @@ const SignUpForm = () => {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter admin email"
               required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Phone Number</label>
+            <input
+              type="text"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              placeholder="Enter phone number"
             />
           </div>
 
@@ -153,6 +211,56 @@ const SignUpForm = () => {
             </div>
           </div>
 
+          <div className="form-group">
+            <label>Country</label>
+            <input
+              type="text"
+              value={country}
+              onChange={(e) => setCountry(e.target.value)}
+              placeholder="Enter country"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>State</label>
+            <input
+              type="text"
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              placeholder="Enter state/province"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>City</label>
+            <input
+              type="text"
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              placeholder="Enter city"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Address</label>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Enter address"
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Postal/ZIP Code</label>
+            <input
+              type="text"
+              value={postalCode}
+              onChange={(e) => setPostalCode(e.target.value)}
+              placeholder="Enter postal/zip code"
+            />
+          </div>
+
           <button type="submit" className="sign-in-btn" disabled={loading}>
             {loading ? "Creating Admin..." : "Create Admin User"}
           </button>
@@ -160,9 +268,9 @@ const SignUpForm = () => {
           <button
             type="button"
             className="back-to-login-btn"
-            onClick={() => navigate("/powerbi-dashboard")}
+            onClick={() => navigate("/dashboard")}
           >
-            Back to Dashboard
+            Back to Home
           </button>
         </form>
       </div>
