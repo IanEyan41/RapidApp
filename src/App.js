@@ -11,6 +11,11 @@ import SignUpForm from "./components/SignUpForm";
 import ForgotPassword from "./components/ForgotPassword";
 import Dashboard from "./components/Dashboard/Dashboard";
 import OvertimeManagement from "./components/OvertimeManagement/OvertimeManagement";
+import OvertimeDetail from "./components/OvertimeManagement/OvertimeDetail";
+import OvertimeEdit from "./components/OvertimeManagement/OvertimeEdit";
+import EmployeeManagement from "./components/EmployeeManagement/EmployeeManagement";
+import EmployeeDetail from "./components/EmployeeManagement/EmployeeDetail";
+import EmployeeEdit from "./components/EmployeeManagement/EmployeeEdit";
 import { auth } from "./services/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { getUserRole } from "./services/firebase";
@@ -124,6 +129,28 @@ function App() {
               element={
                 user ? <OvertimeManagement /> : <Navigate to="/" replace />
               }
+            />
+            <Route
+              path="/overtime-management/detail/:id"
+              element={user ? <OvertimeDetail /> : <Navigate to="/" replace />}
+            />
+            <Route
+              path="/overtime-management/edit/:id"
+              element={user ? <OvertimeEdit /> : <Navigate to="/" replace />}
+            />
+            <Route
+              path="/employee-management"
+              element={
+                user ? <EmployeeManagement /> : <Navigate to="/" replace />
+              }
+            />
+            <Route
+              path="/employee-management/detail/:id"
+              element={user ? <EmployeeDetail /> : <Navigate to="/" replace />}
+            />
+            <Route
+              path="/employee-management/edit/:id"
+              element={user ? <EmployeeEdit /> : <Navigate to="/" replace />}
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import "./OvertimeForm.css";
+import "../OvertimeManagement/OvertimeForm.css";
 import { db } from "../../services/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useTheme } from "../../services/ThemeContext";
 
-const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
+const EmployeeForm = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     employeeNumber: "",
     employeeName: "",
@@ -15,9 +15,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
     shift: "A",
     department: "Production",
     location: "",
-    routeCode: "",
-    dateIn: "",
-    dateOut: "",
+    routeCode: "89",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -38,22 +36,21 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
 
     try {
       // Add timestamp to the form data
-      const overtimeData = {
+      const employeeData = {
         ...formData,
         createdAt: serverTimestamp(),
-        status: "pending", // Adding a default status
       };
 
       // Add document to Firestore
       const docRef = await addDoc(
-        collection(db, "overtime-management"),
-        overtimeData
+        collection(db, "employee-management"),
+        employeeData
       );
       console.log("Document written with ID: ", docRef.id);
 
       // Call the onSubmit prop if provided
       if (onSubmit) {
-        onSubmit(overtimeData);
+        onSubmit(employeeData);
       }
 
       // Close the form
@@ -70,9 +67,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
         shift: "A",
         department: "Production",
         location: "",
-        routeCode: "",
-        dateIn: "",
-        dateOut: "",
+        routeCode: "89",
       });
     } catch (err) {
       console.error("Error adding document: ", err);
@@ -88,7 +83,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
     <div className={`modal-overlay ${theme}-theme`}>
       <div className="modal-content">
         <div className="modal-header">
-          <h2>Add Overtime Form</h2>
+          <h2>Add Employee Form</h2>
           <button className="close-button" onClick={onClose}>
             ×
           </button>
@@ -99,7 +94,6 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
 
           <div className="form-section">
             <h3>Employee Details</h3>
-
             <div className="form-row">
               <div className="form-group">
                 <label>Employee Number/Signs</label>
@@ -108,7 +102,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   name="employeeNumber"
                   value={formData.employeeNumber}
                   onChange={handleChange}
-                  placeholder="0007"
+                  placeholder="0008"
                   required
                 />
               </div>
@@ -119,7 +113,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   name="employeeName"
                   value={formData.employeeName}
                   onChange={handleChange}
-                  placeholder="Muhammad Haziq bin Roslan"
+                  placeholder="Lim Yi Yang"
                   required
                 />
               </div>
@@ -144,7 +138,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="muhammed.haziq43@gmail.com"
+                  placeholder="lim.yiyang@gmail.com"
                   required
                 />
               </div>
@@ -158,10 +152,13 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
-                  placeholder="Lintang Hajjah Rehmah 1, Jelutong, 11600 George Town, Penang,Malaysia"
+                  placeholder="Jalan Masjid Kapitan Keling, George Town, 10200 George Town, Penang, Malaysia"
                   required
                 />
               </div>
+            </div>
+
+            <div className="form-row">
               <div className="form-group">
                 <label>Postal/ZIP Code</label>
                 <input
@@ -169,24 +166,23 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                   name="postalCode"
                   value={formData.postalCode}
                   onChange={handleChange}
-                  placeholder="43300"
+                  placeholder="10200"
                   required
                 />
               </div>
-            </div>
-
-            <div className="form-group">
-              <label>Shift</label>
-              <select
-                name="shift"
-                value={formData.shift}
-                onChange={handleChange}
-                required
-              >
-                <option value="A">A</option>
-                <option value="B">B</option>
-                <option value="C">C</option>
-              </select>
+              <div className="form-group">
+                <label>Shift</label>
+                <select
+                  name="shift"
+                  value={formData.shift}
+                  onChange={handleChange}
+                  required
+                >
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                </select>
+              </div>
             </div>
           </div>
 
@@ -221,7 +217,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
           </div>
 
           <div className="form-section">
-            <h3>Routes Assignment</h3>
+            <h3>Route Assignment</h3>
             <div className="form-group">
               <label>Route Code</label>
               <input
@@ -229,35 +225,9 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
                 name="routeCode"
                 value={formData.routeCode}
                 onChange={handleChange}
-                placeholder="1"
+                placeholder="89"
                 required
               />
-            </div>
-          </div>
-
-          <div className="form-section">
-            <h3>Date</h3>
-            <div className="form-row">
-              <div className="form-group">
-                <label>Date In</label>
-                <input
-                  type="date"
-                  name="dateIn"
-                  value={formData.dateIn}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="form-group">
-                <label>Date Out</label>
-                <input
-                  type="date"
-                  name="dateOut"
-                  value={formData.dateOut}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
             </div>
           </div>
 
@@ -270,7 +240,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
               className="submit-button"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Submitting..." : "Add"}
+              {isSubmitting ? "Submitting..." : "Submit"}
             </button>
           </div>
         </form>
@@ -279,4 +249,4 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
   );
 };
 
-export default OvertimeForm;
+export default EmployeeForm;

@@ -1,12 +1,12 @@
 /* General Container */
-.ot-management-container {
+.em-management-container {
   display: flex;
   background-color: #f8f9fa;
   min-height: 100vh;
 }
 
 /* Main Content Area */
-.ot-main-content {
+.em-main-content {
   flex-grow: 1;
   padding: 20px 40px;
   display: flex;
@@ -14,25 +14,25 @@
 }
 
 /* Header */
-.ot-header {
+.em-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
 }
 
-.ot-header h1 {
+.em-header h1 {
   font-size: 28px;
   font-weight: 600;
   color: #343a40;
 }
 
-.header-controls-ot {
+.header-controls-em {
   display: flex;
   align-items: center;
 }
 
-.theme-toggle-ot {
+.theme-toggle-em {
   cursor: pointer;
   color: #495057;
   width: 40px;
@@ -45,12 +45,12 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.theme-icon-ot {
+.theme-icon-em {
   font-size: 22px;
 }
 
 /* Back Button */
-.ot-back-button {
+.em-back-button {
   background: none;
   border: none;
   color: #e63946;
@@ -62,14 +62,14 @@
 }
 
 /* Content Layout */
-.ot-content-area {
+.em-content-area {
   display: flex;
   gap: 30px;
   flex-grow: 1;
 }
 
 /* Filter Section */
-.ot-filter-section {
+.em-filter-section {
   background-color: #ffffff;
   border-radius: 8px;
   padding: 20px;
@@ -78,7 +78,7 @@
   height: fit-content;
 }
 
-.ot-filter-header {
+.em-filter-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -87,12 +87,12 @@
   border-bottom: 1px solid #e9ecef;
 }
 
-.ot-filter-header h3 {
+.em-filter-header h3 {
   font-size: 18px;
   color: #343a40;
 }
 
-.ot-refresh-button {
+.em-refresh-button {
   background: none;
   border: none;
   color: #e63946;
@@ -100,12 +100,12 @@
   cursor: pointer;
 }
 
-.ot-shift-filters h4 {
+.em-shift-filters h4 {
   font-size: 16px;
   margin-bottom: 15px;
 }
 
-.ot-shift-filters label {
+.em-shift-filters label {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -114,14 +114,14 @@
   color: #495057;
 }
 
-.ot-shift-filters input[type="checkbox"] {
+.em-shift-filters input[type="checkbox"] {
   accent-color: #e63946;
   width: 16px;
   height: 16px;
 }
 
 /* Table Section */
-.ot-table-section {
+.em-table-section {
   flex-grow: 1;
   background-color: #ffffff;
   border-radius: 8px;
@@ -131,7 +131,7 @@
   flex-direction: column;
 }
 
-.ot-search-bar {
+.em-search-bar {
   display: flex;
   align-items: center;
   margin-bottom: 20px;
@@ -141,11 +141,11 @@
   padding: 5px 15px;
 }
 
-.ot-search-bar .ot-search-icon {
+.em-search-bar .em-search-icon {
   color: #6c757d;
 }
 
-.ot-search-bar input {
+.em-search-bar input {
   flex-grow: 1;
   border: none;
   background: none;
@@ -154,7 +154,7 @@
   font-size: 14px;
 }
 
-.ot-add-form-button {
+.em-add-form-button {
   background-color: #e63946;
   color: white;
   border: none;
@@ -169,33 +169,33 @@
 }
 
 /* Table Styles */
-.ot-overtime-table {
+.em-employee-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.ot-overtime-table th,
-.ot-overtime-table td {
+.em-employee-table th,
+.em-employee-table td {
   padding: 15px;
   text-align: center;
   border-bottom: 1px solid #e9ecef;
   font-size: 14px;
 }
 
-.ot-overtime-table thead tr {
+.em-employee-table thead tr {
   background-color: #ffebf0;
 }
 
-.ot-overtime-table th {
+.em-employee-table th {
   color: #e63946;
   font-weight: 600;
 }
 
-.ot-overtime-table tbody tr:last-child td {
+.em-employee-table tbody tr:last-child td {
   border-bottom: none;
 }
 
-.ot-details-button {
+.em-details-button {
   background: none;
   border: none;
   color: #6c757d;
@@ -207,59 +207,59 @@
   margin: 0 auto;
 }
 
-/* Dark theme adjustments if needed */
-.dark-theme .ot-management-container {
+/* Dark theme adjustments */
+.dark-theme .em-management-container {
   background-color: #121212;
 }
-.dark-theme .ot-main-content,
-.dark-theme .ot-header h1,
-.dark-theme .ot-filter-header h3,
-.dark-theme .ot-shift-filters label,
-.dark-theme .ot-overtime-table th,
-.dark-theme .ot-overtime-table td {
+.dark-theme .em-main-content,
+.dark-theme .em-header h1,
+.dark-theme .em-filter-header h3,
+.dark-theme .em-shift-filters label,
+.dark-theme .em-employee-table th,
+.dark-theme .em-employee-table td {
   color: #ffffff;
 }
-.dark-theme .ot-filter-section,
-.dark-theme .ot-table-section,
-.dark-theme .ot-search-bar {
+.dark-theme .em-filter-section,
+.dark-theme .em-table-section,
+.dark-theme .em-search-bar {
   background-color: #1e1e1e;
   border-color: #333;
 }
-.dark-theme .ot-overtime-table thead tr {
+.dark-theme .em-employee-table thead tr {
   background-color: #4a2d32;
 }
-.dark-theme .ot-overtime-table th {
+.dark-theme .em-employee-table th {
   color: #ff8a80;
 }
-.dark-theme .ot-overtime-table td,
-.dark-theme .ot-overtime-table th {
+.dark-theme .em-employee-table td,
+.dark-theme .em-employee-table th {
   border-bottom: 1px solid #333;
 }
-.dark-theme .ot-search-bar input,
-.dark-theme .ot-details-button {
+.dark-theme .em-search-bar input,
+.dark-theme .em-details-button {
   color: #e0e0e0;
 }
 
-.dark-theme .theme-toggle-ot {
+.dark-theme .theme-toggle-em {
   color: #e0e0e0;
   background-color: #333333;
 }
-.dark-theme .ot-back-button,
-.dark-theme .ot-refresh-button {
+.dark-theme .em-back-button,
+.dark-theme .em-refresh-button {
   color: #ff8a80;
 }
-.dark-theme .ot-add-form-button {
+.dark-theme .em-add-form-button {
   background-color: #ff5252;
 }
 
-.ot-loading {
+.em-loading {
   text-align: center;
   padding: 20px;
   color: #666;
   font-size: 16px;
 }
 
-.ot-error-message {
+.em-error-message {
   background-color: #ffebee;
   color: #e63946;
   padding: 12px;
@@ -274,31 +274,8 @@
   padding: 20px !important;
 }
 
-.status-badge {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: capitalize;
-}
-
-.status-badge.pending {
-  background-color: #fff3cd;
-  color: #856404;
-}
-
-.status-badge.approved {
-  background-color: #d4edda;
-  color: #155724;
-}
-
-.status-badge.rejected {
-  background-color: #f8d7da;
-  color: #721c24;
-}
-
 /* Dark theme adjustments */
-.dark-theme .ot-loading {
+.dark-theme .em-loading {
   color: #e0e0e0;
 }
 
@@ -306,22 +283,7 @@
   color: #e0e0e0;
 }
 
-.dark-theme .ot-error-message {
+.dark-theme .em-error-message {
   background-color: rgba(230, 57, 70, 0.1);
   color: #ff8a80;
-}
-
-.dark-theme .status-badge.pending {
-  background-color: rgba(255, 193, 7, 0.1);
-  color: #ffc107;
-}
-
-.dark-theme .status-badge.approved {
-  background-color: rgba(40, 167, 69, 0.1);
-  color: #28a745;
-}
-
-.dark-theme .status-badge.rejected {
-  background-color: rgba(220, 53, 69, 0.1);
-  color: #dc3545;
 }

@@ -45,7 +45,11 @@ const Sidebar = ({ userRole }) => {
     switch (userRole) {
       case "Human Resources":
         return [
-          { icon: <FaUsers />, label: "Employee Form", path: "/employee-form" },
+          {
+            icon: <FaUsers />,
+            label: "Employee Form",
+            path: "/employee-management",
+          },
           {
             icon: <FaClock />,
             label: "Overtime Form",
@@ -72,7 +76,18 @@ const Sidebar = ({ userRole }) => {
           { icon: <FaBuilding />, label: "Vendor Form", path: "/vendor-form" },
         ];
       default:
-        return [];
+        return [
+          {
+            icon: <FaUsers />,
+            label: "Employee Form",
+            path: "/employee-management",
+          },
+          {
+            icon: <FaClock />,
+            label: "Overtime Form",
+            path: "/overtime-management",
+          },
+        ];
     }
   };
 

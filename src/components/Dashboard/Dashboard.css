@@ -100,6 +100,27 @@ body::-webkit-scrollbar {
   padding: 20px;
   display: flex;
   flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  z-index: 100;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera but keep functionality */
+.sidebar::-webkit-scrollbar {
+  width: 0px;
+  background: transparent;
+}
+
+/* For Firefox */
+.sidebar {
+  scrollbar-width: none;
+}
+
+/* For IE and Edge */
+.sidebar {
+  -ms-overflow-style: none;
 }
 
 /* Theme Toggle */
@@ -110,20 +131,20 @@ body::-webkit-scrollbar {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
+  border-radius: 50%;
   transition: all 0.3s ease;
-  background-color: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background-color: #ffffff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .dark-theme .theme-toggle {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: #333333;
+  color: #e0e0e0;
 }
 
 .light-theme .theme-toggle {
   background-color: white;
-  border-color: #e0e0e0;
+  color: #495057;
 }
 
 .theme-toggle:hover {

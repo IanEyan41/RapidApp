@@ -76,28 +76,36 @@ const Dashboard = () => {
 
     const actions = [];
 
-    // Common actions for all admin roles (except superadmin)
-    actions.push({
-      icon: <FaBuilding />,
-      label: "Add New Organization",
-      path: "/organization/new",
-      color: "#d70000",
-    });
-
     switch (userRole) {
       case "Human Resources":
         actions.push(
           {
             icon: <FaUsers />,
-            label: "Employee Form",
-            path: "/employee-form",
+            label: "Add Employee",
+            path: "/employee-management",
             color: "#d70000",
+            onClick: () => {
+              navigate("/employee-management");
+              // Small delay to ensure component is mounted
+              setTimeout(() => {
+                const addButton = document.querySelector(".em-add-form-button");
+                if (addButton) addButton.click();
+              }, 100);
+            },
           },
           {
             icon: <FaClock />,
-            label: "Overtime Form",
+            label: "Add Overtime",
             path: "/overtime-management",
             color: "#d70000",
+            onClick: () => {
+              navigate("/overtime-management");
+              // Small delay to ensure component is mounted
+              setTimeout(() => {
+                const addButton = document.querySelector(".ot-add-form-button");
+                if (addButton) addButton.click();
+              }, 100);
+            },
           }
         );
         break;
@@ -246,7 +254,7 @@ const Dashboard = () => {
               <div
                 key={index}
                 className="quick-action-card"
-                onClick={() => navigate(action.path)}
+                onClick={action.onClick || (() => navigate(action.path))}
                 style={{ backgroundColor: action.color }}
               >
                 <div className="quick-action-icon">{action.icon}</div>

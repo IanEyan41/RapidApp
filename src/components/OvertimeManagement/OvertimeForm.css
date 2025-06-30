@@ -4,7 +4,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -12,14 +12,15 @@
 }
 
 .modal-content {
-  background-color: #1a1d21;
+  background-color: white;
   border-radius: 8px;
   padding: 24px;
   width: 90%;
   max-width: 800px;
   max-height: 90vh;
   overflow-y: auto;
-  color: white;
+  color: #333;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .modal-header {
@@ -28,13 +29,13 @@
   align-items: center;
   margin-bottom: 24px;
   padding-bottom: 16px;
-  border-bottom: 1px solid #2d3035;
+  border-bottom: 1px solid #e9ecef;
 }
 
 .modal-header h2 {
   margin: 0;
   font-size: 24px;
-  color: white;
+  color: #333;
 }
 
 .close-button {
@@ -47,7 +48,7 @@
 }
 
 .close-button:hover {
-  color: #ff3366;
+  color: #e63946;
 }
 
 .form-section {
@@ -55,88 +56,145 @@
 }
 
 .form-section h3 {
-  color: #666;
+  color: #333;
   margin-bottom: 16px;
   font-size: 18px;
+  font-weight: 600;
 }
 
 .form-row {
-  display: flex;
-  gap: 16px;
-  margin-bottom: 16px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .form-group {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .form-group.full-width {
-  flex: 2;
+  grid-column: 1 / -1;
 }
 
 .form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: #ffffff;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
 }
 
 .form-group input,
 .form-group select {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #2d3035;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  background-color: #22252a;
-  color: white;
-  font-size: 14px;
+  font-size: 1rem;
+  width: 100%;
 }
 
 .form-group input:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #ff3366;
+  border-color: #e63946;
+  box-shadow: 0 0 0 2px rgba(230, 57, 70, 0.1);
 }
 
 .form-group input::placeholder {
-  color: #666;
+  color: #adb5bd;
 }
 
 .form-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 24px;
-  padding-top: 16px;
-  border-top: 1px solid #2d3035;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #eee;
+}
+
+.right-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.delete-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  background-color: #dc3545;
+  border: none;
+  color: white;
+  transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #c82333;
+}
+
+.delete-confirmation .form-actions {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 1rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
+}
+
+.delete-confirmation .modal-content {
+  max-width: 400px;
+}
+
+.delete-confirmation .modal-header {
+  padding: 1.5rem 1.5rem 0.5rem 1.5rem;
+}
+
+.delete-confirmation .modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: #333;
+}
+
+.delete-confirmation .modal-body {
+  padding: 1rem 1.5rem;
+  text-align: center;
+}
+
+.delete-confirmation .modal-body p {
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
 }
 
 .cancel-button,
 .submit-button {
-  padding: 10px 24px;
+  padding: 0.75rem 1.5rem;
   border-radius: 4px;
-  font-size: 14px;
+  font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: background-color 0.2s;
 }
 
 .cancel-button {
   background: none;
-  border: 1px solid #2d3035;
-  color: white;
-}
-
-.cancel-button:hover {
-  background-color: #2d3035;
+  border: 1px solid #ddd;
+  color: #666;
 }
 
 .submit-button {
-  background-color: #ff3366;
+  background-color: #e63946;
   border: none;
   color: white;
 }
 
 .submit-button:hover {
-  background-color: #ff1f57;
+  background-color: #d32f2f;
+}
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 /* Scrollbar styling */
@@ -145,27 +203,161 @@
 }
 
 .modal-content::-webkit-scrollbar-track {
-  background: #1a1d21;
+  background: #f8f9fa;
 }
 
 .modal-content::-webkit-scrollbar-thumb {
-  background: #2d3035;
+  background: #dee2e6;
   border-radius: 4px;
 }
 
 .modal-content::-webkit-scrollbar-thumb:hover {
-  background: #373b42;
-}
-
-.form-section h3 {
-  color: white;
+  background: #ced4da;
 }
 
 .error-message {
-  background-color: rgba(255, 0, 0, 0.1);
-  color: #ff3366;
-  padding: 12px;
+  color: #e63946;
+  background-color: #ffebee;
+  padding: 1rem;
   border-radius: 4px;
-  margin-bottom: 16px;
-  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Dark theme styles */
+.dark-theme .modal-content {
+  background-color: #22252a;
+  color: white;
+}
+
+.dark-theme .modal-header {
+  border-bottom-color: #2d3035;
+}
+
+.dark-theme .modal-header h2 {
+  color: white;
+}
+
+.dark-theme .close-button {
+  color: #999;
+}
+
+.dark-theme .close-button:hover {
+  color: #ff8a80;
+}
+
+.dark-theme .form-section h3 {
+  color: white;
+}
+
+.dark-theme .form-group label {
+  color: #999;
+}
+
+.dark-theme .form-group input,
+.dark-theme .form-group select {
+  background-color: #2d3035;
+  border-color: #373b42;
+  color: white;
+}
+
+.dark-theme .form-group input::placeholder {
+  color: #666;
+}
+
+.dark-theme .form-group input:focus,
+.dark-theme .form-group select:focus {
+  border-color: #ff5252;
+  box-shadow: 0 0 0 2px rgba(255, 82, 82, 0.1);
+}
+
+.dark-theme .form-actions {
+  border-top-color: #373b42;
+}
+
+.dark-theme .cancel-button {
+  border-color: #373b42;
+  color: #999;
+}
+
+.dark-theme .submit-button {
+  background-color: #ff5252;
+}
+
+.dark-theme .submit-button:hover {
+  background-color: #ff1744;
+}
+
+.dark-theme .submit-button:disabled {
+  background-color: #424242;
+}
+
+.dark-theme .modal-content::-webkit-scrollbar-track {
+  background: #2d3035;
+}
+
+.dark-theme .modal-content::-webkit-scrollbar-thumb {
+  background: #373b42;
+}
+
+.dark-theme .modal-content::-webkit-scrollbar-thumb:hover {
+  background: #424242;
+}
+
+.dark-theme .error-message {
+  background-color: #311b1b;
+  color: #ff8a80;
+}
+
+.dark-theme .delete-confirmation .modal-header h2 {
+  color: white;
+}
+
+.dark-theme .delete-confirmation .modal-body p {
+  color: #999;
+}
+
+.form-group input[type="date"] {
+  width: auto;
+  min-width: 150px;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+/* Dark theme styles */
+.dark-theme .form-group input[type="date"] {
+  background-color: #2d3035;
+  border-color: #373b42;
+  color: white;
+}
+
+.form-group select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 16px;
+  padding-right: 35px;
+}
+
+/* Dark theme select arrow */
+.dark-theme .form-group select {
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
+
+/* Remove default arrow in IE */
+.form-group select::-ms-expand {
+  display: none;
+}
+
+/* Dark theme styles */
+.dark-theme .delete-button {
+  background-color: #dc3545;
+}
+
+.dark-theme .delete-button:hover {
+  background-color: #c82333;
 }
