@@ -15,6 +15,34 @@ const NotificationPanel = () => {
   const [activities, setActivities] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
 
+  // Helper function to determine activity type
+  const getActivityType = (description) => {
+    const lowerDesc = description.toLowerCase();
+    if (lowerDesc.includes("deleted")) return "delete";
+    if (lowerDesc.includes("added") || lowerDesc.includes("created"))
+      return "create";
+    if (lowerDesc.includes("updated") || lowerDesc.includes("modified"))
+      return "update";
+    if (lowerDesc.includes("admin")) return "admin";
+    return "create"; // default type
+  };
+
+  // Helper function to get activity type label
+  const getActivityTypeLabel = (type) => {
+    switch (type) {
+      case "delete":
+        return "Deleted";
+      case "create":
+        return "Created";
+      case "update":
+        return "Updated";
+      case "admin":
+        return "Admin";
+      default:
+        return "Action";
+    }
+  };
+
   // Fetch recent activities (limited to 3)
   useEffect(() => {
     const activitiesRef = collection(db, "recent-activities");
@@ -25,13 +53,17 @@ const NotificationPanel = () => {
     );
 
     const unsubscribe = onSnapshot(activitiesQuery, (snapshot) => {
-      const activitiesData = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-        time: formatDistanceToNow(doc.data().timestamp.toDate(), {
-          addSuffix: true,
-        }),
-      }));
+      const activitiesData = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          time: formatDistanceToNow(data.timestamp.toDate(), {
+            addSuffix: true,
+          }),
+          type: getActivityType(data.description),
+        };
+      });
       setActivities(activitiesData);
     });
 
@@ -84,9 +116,14 @@ const NotificationPanel = () => {
         <h2>Recent Activities</h2>
         <div className="activities-list">
           {activities.map((activity) => (
-            <div key={activity.id} className="activity-item">
+            <div key={activity.id} className={`activity-item ${activity.type}`}>
               <small>{activity.time}</small>
-              <h4>{activity.user}</h4>
+              <h4>
+                {activity.user}
+                <span className={`activity-type-badge ${activity.type}`}>
+                  {getActivityTypeLabel(activity.type)}
+                </span>
+              </h4>
               <p>{activity.description}</p>
             </div>
           ))}

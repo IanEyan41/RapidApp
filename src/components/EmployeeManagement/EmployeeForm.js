@@ -41,16 +41,9 @@ const EmployeeForm = ({ isOpen, onClose, onSubmit }) => {
         createdAt: serverTimestamp(),
       };
 
-      // Add document to Firestore
-      const docRef = await addDoc(
-        collection(db, "employee-management"),
-        employeeData
-      );
-      console.log("Document written with ID: ", docRef.id);
-
       // Call the onSubmit prop if provided
       if (onSubmit) {
-        onSubmit(employeeData);
+        await onSubmit(employeeData);
       }
 
       // Close the form

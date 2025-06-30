@@ -236,6 +236,8 @@ h1 {
   cursor: pointer;
   transition: background-color 0.3s;
   box-sizing: border-box;
+  line-height: 1.5;
+  min-height: 45px;
 }
 
 .sign-in-btn:hover {
@@ -396,7 +398,7 @@ h1 {
 }
 
 .popup-content h2 {
-  color: #333;
+  color: #000;
   margin-bottom: 10px;
 }
 
@@ -406,7 +408,6 @@ h1 {
 }
 
 .popup-content .sign-in-btn {
-  margin-top: 10px;
   background-color: #e53935;
 }
 
@@ -495,14 +496,19 @@ h1 {
 }
 
 .cancel-btn {
-  padding: 10px 20px;
+  padding: 12px;
+  width: 100%;
   background-color: #6c757d;
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
+  font-size: 16px;
   transition: background-color 0.3s;
+  box-sizing: border-box;
+  line-height: 1.5;
+  min-height: 45px;
 }
 
 .cancel-btn:hover {
@@ -511,4 +517,21 @@ h1 {
 
 .dark-theme .radio-label {
   color: white !important;
+}
+
+.logout-icon {
+  width: 60px;
+  height: 60px;
+  background-color: #e53935;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  animation: slideIn 0.5s ease-in-out 0.2s both;
+}
+
+.dark-theme .logout-icon {
+  background-color: #d32f2f;
 }

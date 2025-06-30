@@ -131,20 +131,20 @@ body::-webkit-scrollbar {
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
+  border-radius: 8px;
   transition: all 0.3s ease;
-  background-color: #ffffff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .dark-theme .theme-toggle {
-  background-color: #333333;
-  color: #e0e0e0;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .light-theme .theme-toggle {
   background-color: white;
-  color: #495057;
+  border-color: #e0e0e0;
 }
 
 .theme-toggle:hover {
@@ -685,94 +685,4 @@ body::-webkit-scrollbar {
 
 .dark-theme .sidebar-footer p {
   color: #888;
-}
-
-/* Activities Popup Styles */
-.popup-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-.popup-content.activities-popup {
-  background-color: #2a2e35;
-  border-radius: 12px;
-  padding: 24px;
-  width: 90%;
-  max-width: 600px;
-  max-height: 80vh;
-  position: relative;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.light-theme .popup-content.activities-popup {
-  background-color: white;
-}
-
-.popup-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.popup-header h2 {
-  margin: 0;
-  font-size: 24px;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #666;
-  padding: 0;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  transition: all 0.3s ease;
-}
-
-.close-button:hover {
-  background-color: rgba(229, 57, 53, 0.1);
-  color: #e53935;
-}
-
-.activities-list-full {
-  overflow-y: auto;
-  max-height: calc(80vh - 100px);
-  padding-right: 10px;
-}
-
-.activities-list-full::-webkit-scrollbar {
-  width: 8px;
-}
-
-.activities-list-full::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 4px;
-}
-
-.activities-list-full::-webkit-scrollbar-thumb {
-  background: rgba(229, 57, 53, 0.5);
-  border-radius: 4px;
-}
-
-.activities-list-full::-webkit-scrollbar-thumb:hover {
-  background: rgba(229, 57, 53, 0.7);
-}
-
-.activities-list-full .activity-item {
-  margin-bottom: 15px;
 }

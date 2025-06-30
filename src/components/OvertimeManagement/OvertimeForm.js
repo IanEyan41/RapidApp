@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import "./OvertimeForm.css";
-import { db } from "../../services/firebase";
+import { db, auth, recordActivity } from "../../services/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useTheme } from "../../services/ThemeContext";
 
@@ -51,9 +51,17 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
       );
       console.log("Document written with ID: ", docRef.id);
 
-      // Call the onSubmit prop if provided
+      // Record the activity
+      const user = auth.currentUser;
+      const userName = user.displayName || user.email.split("@")[0];
+      await recordActivity(
+        userName,
+        `Created overtime request for ${overtimeData.employeeName} (${overtimeData.employeeNumber})`
+      );
+
+      // Call the onSubmit prop if provided (for any additional handling in parent)
       if (onSubmit) {
-        onSubmit(overtimeData);
+        await onSubmit();
       }
 
       // Close the form
@@ -75,7 +83,7 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
         dateOut: "",
       });
     } catch (err) {
-      console.error("Error adding document: ", err);
+      console.error("Error submitting form: ", err);
       setError("Failed to submit form. Please try again.");
     } finally {
       setIsSubmitting(false);

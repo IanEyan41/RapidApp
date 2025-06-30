@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./OvertimeManagement.css";
-import { auth, db, recordActivity } from "../../services/firebase";
+import { auth, db } from "../../services/firebase";
 import {
   doc,
   getDoc,
@@ -10,9 +10,7 @@ import {
   onSnapshot,
   where,
   orderBy,
-  addDoc,
   deleteDoc,
-  serverTimestamp,
 } from "firebase/firestore";
 import OvertimeForm from "./OvertimeForm";
 import Sidebar from "../Dashboard/Sidebar";
@@ -123,41 +121,9 @@ const OvertimeManagement = () => {
     navigate("/dashboard");
   };
 
-  const handleFormSubmit = async (formData) => {
-    try {
-      const docRef = await addDoc(collection(db, "overtime-management"), {
-        ...formData,
-        createdAt: serverTimestamp(),
-      });
-
-      // Record the activity
-      const user = auth.currentUser;
-      const userName = user.displayName || user.email.split("@")[0];
-      await recordActivity(
-        userName,
-        `Created overtime request for ${formData.employeeName} (${formData.employeeNumber})`
-      );
-
-      setIsFormOpen(false);
-      setShowSuccessPopup(true);
-    } catch (error) {
-      console.error("Error adding overtime request:", error);
-      setError("Failed to add overtime request. Please try again.");
-    }
-  };
-
   const handleDelete = async (overtimeId, employeeName, employeeNumber) => {
     try {
       await deleteDoc(doc(db, "overtime-management", overtimeId));
-
-      // Record the activity
-      const user = auth.currentUser;
-      const userName = user.displayName || user.email.split("@")[0];
-      await recordActivity(
-        userName,
-        `Deleted overtime request for ${employeeName} (${employeeNumber})`
-      );
-
       setShowSuccessPopup(true);
     } catch (error) {
       console.error("Error deleting overtime request:", error);
@@ -314,7 +280,10 @@ const OvertimeManagement = () => {
       <OvertimeForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
-        onSubmit={handleFormSubmit}
+        onSubmit={() => {
+          setIsFormOpen(false);
+          setShowSuccessPopup(true);
+        }}
       />
     </div>
   );
