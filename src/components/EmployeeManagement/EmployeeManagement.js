@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./EmployeeManagement.css";
-import { auth, db } from "../../services/firebase";
+import { auth, db, recordActivity } from "../../services/firebase";
 import {
   doc,
   getDoc,
@@ -9,6 +9,9 @@ import {
   query,
   onSnapshot,
   orderBy,
+  addDoc,
+  deleteDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import EmployeeForm from "./EmployeeForm";
 import Sidebar from "../Dashboard/Sidebar";
@@ -27,6 +30,7 @@ const EmployeeManagement = () => {
   const [employeeData, setEmployeeData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   // Fetch user data
   useEffect(() => {
@@ -118,12 +122,50 @@ const EmployeeManagement = () => {
     navigate("/dashboard");
   };
 
-  const handleAddFormSubmit = () => {
-    setIsFormOpen(false);
+  const handleAddFormSubmit = async (formData) => {
+    try {
+      const docRef = await addDoc(collection(db, "employee-management"), {
+        ...formData,
+        createdAt: serverTimestamp(),
+      });
+
+      // Record the activity
+      const user = auth.currentUser;
+      const userName = user.displayName || user.email.split("@")[0];
+      await recordActivity(
+        userName,
+        `Added new employee ${formData.employeeName} (${formData.employeeNumber})`
+      );
+
+      setIsFormOpen(false);
+      setShowSuccessPopup(true);
+    } catch (error) {
+      console.error("Error adding employee:", error);
+      setError("Failed to add employee. Please try again.");
+    }
   };
 
   const handleAddForm = () => {
     setIsFormOpen(true);
+  };
+
+  const handleDelete = async (employeeId, employeeName, employeeNumber) => {
+    try {
+      await deleteDoc(doc(db, "employee-management", employeeId));
+
+      // Record the activity
+      const user = auth.currentUser;
+      const userName = user.displayName || user.email.split("@")[0];
+      await recordActivity(
+        userName,
+        `Deleted employee ${employeeName} (${employeeNumber})`
+      );
+
+      setShowSuccessPopup(true);
+    } catch (error) {
+      console.error("Error deleting employee:", error);
+      setError("Failed to delete employee. Please try again.");
+    }
   };
 
   const formatDate = (timestamp) => {

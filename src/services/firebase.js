@@ -15,6 +15,8 @@ import {
   query,
   where,
   updateDoc,
+  addDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 
 // Your Firebase configuration
@@ -258,6 +260,20 @@ export const updateUserProfile = async (userId, profileData) => {
   } catch (error) {
     console.error("Error updating user profile:", error);
     return { error: error.message };
+  }
+};
+
+// Function to record user activities
+export const recordActivity = async (user, description) => {
+  try {
+    const activitiesRef = collection(db, "recent-activities");
+    await addDoc(activitiesRef, {
+      user: user,
+      description: description,
+      timestamp: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error("Error recording activity:", error);
   }
 };
 
