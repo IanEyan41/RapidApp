@@ -89,7 +89,7 @@ const PowerBIDashboard = () => {
                 <BsMoon className="theme-icon" />
               )}
             </div>
-            <div className="user-profile">
+            <div className="user-profile" onClick={() => navigate("/profile")}>
               <div className="user-avatar">
                 <FaUserCircle className="user-icon" />
               </div>

@@ -137,11 +137,14 @@ const EmployeeManagement = () => {
         `Added new employee ${formData.employeeName} (${formData.employeeNumber})`
       );
 
-      setIsFormOpen(false);
-      setShowSuccessPopup(true);
+      // Success is handled in the EmployeeForm component now
+      // setIsFormOpen(false);
+      // setShowSuccessPopup(true);
+      return true;
     } catch (error) {
       console.error("Error adding employee:", error);
       setError("Failed to add employee. Please try again.");
+      return false;
     }
   };
 

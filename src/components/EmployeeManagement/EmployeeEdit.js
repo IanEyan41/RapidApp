@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./EmployeeManagement.css";
-import { db } from "../../services/firebase";
+import { auth, db, recordActivity } from "../../services/firebase";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 import { BsArrowLeft } from "react-icons/bs";
 import Sidebar from "../Dashboard/Sidebar";
 import { useTheme } from "../../services/ThemeContext";
 import { BsSun, BsMoon } from "react-icons/bs";
 import DeleteConfirmation from "./DeleteConfirmation";
+import EmployeeDeleteSuccessPopup from "./EmployeeDeleteSuccessPopup";
+import EmployeeEditSuccessPopup from "./EmployeeEditSuccessPopup";
 
 const EmployeeEdit = () => {
   const navigate = useNavigate();
@@ -31,6 +33,8 @@ const EmployeeEdit = () => {
   const { theme, toggleTheme } = useTheme();
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteSuccessPopup, setShowDeleteSuccessPopup] = useState(false);
+  const [showEditSuccessPopup, setShowEditSuccessPopup] = useState(false);
 
   useEffect(() => {
     const fetchEmployeeData = async () => {
@@ -85,8 +89,17 @@ const EmployeeEdit = () => {
       const docRef = doc(db, "employee-management", id);
       await updateDoc(docRef, formData);
 
-      // Navigate back to detail view
-      navigate(`/employee-management/detail/${id}`);
+      // Record the activity
+      const user = auth.currentUser;
+      const userName = user.displayName || user.email.split("@")[0];
+      await recordActivity(
+        userName,
+        `Updated employee ${formData.employeeName} (${formData.employeeNumber})`
+      );
+
+      // Show success popup instead of navigating immediately
+      setShowEditSuccessPopup(true);
+      setIsSubmitting(false);
     } catch (err) {
       console.error("Error updating document: ", err);
       setError("Failed to update form. Please try again.");
@@ -99,14 +112,26 @@ const EmployeeEdit = () => {
     try {
       const docRef = doc(db, "employee-management", id);
       await deleteDoc(docRef);
-      navigate("/employee-management");
+
+      // Show success popup instead of navigating immediately
+      setShowDeleteConfirmation(false);
+      setShowDeleteSuccessPopup(true);
     } catch (err) {
       console.error("Error deleting document: ", err);
       setError("Failed to delete record. Please try again.");
-    } finally {
       setIsDeleting(false);
       setShowDeleteConfirmation(false);
     }
+  };
+
+  const handleDeleteSuccessClose = () => {
+    setShowDeleteSuccessPopup(false);
+    navigate("/employee-management");
+  };
+
+  const handleEditSuccessClose = () => {
+    setShowEditSuccessPopup(false);
+    navigate(`/employee-management/detail/${id}`);
   };
 
   const handleBack = () => {
@@ -314,6 +339,21 @@ const EmployeeEdit = () => {
         isOpen={showDeleteConfirmation}
         onConfirm={handleDelete}
         onCancel={() => setShowDeleteConfirmation(false)}
+        id={id}
+        formData={formData}
+        setShowDeleteConfirmation={setShowDeleteConfirmation}
+      />
+
+      <EmployeeDeleteSuccessPopup
+        isOpen={showDeleteSuccessPopup}
+        onClose={handleDeleteSuccessClose}
+        employeeName={formData.employeeName}
+      />
+
+      <EmployeeEditSuccessPopup
+        isOpen={showEditSuccessPopup}
+        onClose={handleEditSuccessClose}
+        employeeName={formData.employeeName}
       />
     </div>
   );

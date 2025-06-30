@@ -535,3 +535,61 @@ h1 {
 .dark-theme .logout-icon {
   background-color: #d32f2f;
 }
+
+/* Employee Success Popup Styles */
+.employee-success-popup {
+  background: white;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  animation: slideIn 0.3s ease-out;
+  transform-origin: center;
+}
+
+.employee-success-icon {
+  width: 60px;
+  height: 60px;
+  background-color: #e53935; /* Red primary color */
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  margin: 0 auto 20px;
+  animation: checkmark 0.5s ease-in-out 0.2s both;
+}
+
+.employee-success-popup h2 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 24px;
+}
+
+.employee-success-popup p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+
+.employee-success-popup .ok-button {
+  width: 100%;
+  padding: 12px;
+  background-color: #e53935; /* Red primary color */
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-sizing: border-box;
+  line-height: 1.5;
+  min-height: 45px;
+}
+
+.employee-success-popup .ok-button:hover {
+  background-color: #d32f2f;
+}
