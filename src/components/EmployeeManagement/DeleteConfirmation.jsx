@@ -27,9 +27,8 @@ const DeleteConfirmation = ({
       const docRef = doc(db, "employee-management", id);
 
       const user = auth.currentUser;
-      const userName = user.displayName || user.email.split("@")[0];
       await recordActivity(
-        userName,
+        user,
         `Deleted employee ${formData.employeeName} (${formData.employeeNumber})`
       );
 

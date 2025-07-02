@@ -266,9 +266,34 @@ export const updateUserProfile = async (userId, profileData) => {
 // Function to record user activities
 export const recordActivity = async (user, description) => {
   try {
+    let displayName = user;
+
+    // If user is a Firebase user object or just the user ID, get the username from profile
+    if (
+      typeof user === "object" ||
+      (typeof user === "string" && user.includes("@") === false)
+    ) {
+      const userId = typeof user === "object" ? user.uid : user;
+      const userDoc = await getDoc(doc(db, "users", userId));
+
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        // Use username if available, otherwise use name, otherwise fallback to email
+        displayName = userData.username || userData.name || userData.email;
+
+        // If still no name found, use email from auth user
+        if (!displayName && typeof user === "object" && user.email) {
+          displayName = user.email.split("@")[0];
+        }
+      } else if (typeof user === "object" && user.email) {
+        // Fallback to email if profile not found
+        displayName = user.email.split("@")[0];
+      }
+    }
+
     const activitiesRef = collection(db, "recent-activities");
     await addDoc(activitiesRef, {
-      user: user,
+      user: displayName,
       description: description,
       timestamp: serverTimestamp(),
     });

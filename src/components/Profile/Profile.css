@@ -108,6 +108,7 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.3s;
+  width: 150px;
 }
 
 .cancel-btn:hover {
@@ -145,4 +146,43 @@
 
 .light-theme .profile-field label {
   color: #666;
+}
+
+/* Dropdown styles */
+.profile-field select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  color: #333;
+}
+
+.dark-theme .profile-field select {
+  background-color: #333;
+  border-color: #444;
+  color: white;
+}
+
+.profile-field select:disabled {
+  background-color: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+}
+
+.dark-theme .profile-field select:disabled {
+  background-color: #222;
+  color: #666;
+}
+
+.disabled-input {
+  background-color: #f5f5f5 !important;
+  color: #999 !important;
+  cursor: not-allowed;
+}
+
+.dark-theme .disabled-input {
+  background-color: #222 !important;
+  color: #666 !important;
 }

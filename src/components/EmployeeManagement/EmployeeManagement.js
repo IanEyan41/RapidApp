@@ -131,9 +131,8 @@ const EmployeeManagement = () => {
 
       // Record the activity
       const user = auth.currentUser;
-      const userName = user.displayName || user.email.split("@")[0];
       await recordActivity(
-        userName,
+        user,
         `Added new employee ${formData.employeeName} (${formData.employeeNumber})`
       );
 
@@ -158,9 +157,8 @@ const EmployeeManagement = () => {
 
       // Record the activity
       const user = auth.currentUser;
-      const userName = user.displayName || user.email.split("@")[0];
       await recordActivity(
-        userName,
+        user,
         `Deleted employee ${employeeName} (${employeeNumber})`
       );
 

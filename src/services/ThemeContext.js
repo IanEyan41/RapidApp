@@ -11,11 +11,24 @@ export const ThemeProvider = ({ children }) => {
     return savedTheme || "dark";
   });
 
+  // Track when theme changes to trigger animations
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
   // Update localStorage when theme changes
   useEffect(() => {
     localStorage.setItem("theme", theme);
     // Apply theme class to body
     document.body.className = theme === "dark" ? "dark-theme" : "light-theme";
+
+    // Set transitioning state to true for animations
+    setIsTransitioning(true);
+
+    // Reset transitioning state after animation completes
+    const timer = setTimeout(() => {
+      setIsTransitioning(false);
+    }, 300); // Match this with CSS transition duration
+
+    return () => clearTimeout(timer);
   }, [theme]);
 
   // Toggle theme function
@@ -24,7 +37,7 @@ export const ThemeProvider = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, isTransitioning }}>
       {children}
     </ThemeContext.Provider>
   );

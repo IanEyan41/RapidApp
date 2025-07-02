@@ -4,12 +4,15 @@ import "../App.css";
 import amtelLogo from "../Asset/Amtel_logo.png";
 import { createAdminUser, auth } from "../services/firebase";
 import SuccessPopup from "./SuccessPopup";
+import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [department, setDepartment] = useState("");
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
@@ -40,6 +43,8 @@ const SignUpForm = () => {
     setAddress("");
     setPostalCode("");
     setError("");
+    setShowPassword(false);
+    setShowConfirmPassword(false);
   };
 
   const handleSubmit = async (e) => {
@@ -117,6 +122,14 @@ const SignUpForm = () => {
     resetForm();
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
     <>
       <div className="login-form signup-form">
@@ -171,12 +184,20 @@ const SignUpForm = () => {
             <label>Password</label>
             <div className="password-input">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter password"
                 required
               />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={togglePasswordVisibility}
+                tabIndex="-1"
+              >
+                {showPassword ? <BsEyeSlashFill /> : <BsEyeFill />}
+              </button>
             </div>
           </div>
 
@@ -184,12 +205,20 @@ const SignUpForm = () => {
             <label>Confirm Password</label>
             <div className="password-input">
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm password"
                 required
               />
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={toggleConfirmPasswordVisibility}
+                tabIndex="-1"
+              >
+                {showConfirmPassword ? <BsEyeSlashFill /> : <BsEyeFill />}
+              </button>
             </div>
           </div>
 
@@ -227,7 +256,7 @@ const SignUpForm = () => {
               type="text"
               value={state}
               onChange={(e) => setState(e.target.value)}
-              placeholder="Enter state/province"
+              placeholder="Enter state"
             />
           </div>
 
@@ -252,31 +281,27 @@ const SignUpForm = () => {
           </div>
 
           <div className="form-group">
-            <label>Postal/ZIP Code</label>
+            <label>Postal Code</label>
             <input
               type="text"
               value={postalCode}
               onChange={(e) => setPostalCode(e.target.value)}
-              placeholder="Enter postal/zip code"
+              placeholder="Enter postal code"
             />
           </div>
 
           <button type="submit" className="sign-in-btn" disabled={loading}>
-            {loading ? "Creating Admin..." : "Create Admin User"}
-          </button>
-
-          <button
-            type="button"
-            className="back-to-login-btn"
-            onClick={() => navigate("/dashboard")}
-          >
-            Back to Home
+            {loading ? "Creating..." : "Create Admin User"}
           </button>
         </form>
       </div>
 
       {showSuccessPopup && (
-        <SuccessPopup message={successMessage} onClose={handleClosePopup} />
+        <SuccessPopup
+          message={successMessage}
+          onClose={handleClosePopup}
+          onNavigate={() => navigate("/dashboard")}
+        />
       )}
     </>
   );

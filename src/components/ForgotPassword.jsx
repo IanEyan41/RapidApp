@@ -35,7 +35,7 @@ const ForgotPassword = () => {
       {success ? (
         <div className="success-message">
           <p>Password reset email has been sent! Please check your inbox.</p>
-          <button onClick={() => navigate("/login")} className="sign-in-btn">
+          <button onClick={() => navigate("/login")} className="back-button">
             Back to Login
           </button>
         </div>
@@ -61,7 +61,7 @@ const ForgotPassword = () => {
           <p className="create-account">
             <button
               onClick={() => navigate("/login")}
-              className="text-button"
+              className="back-button"
               type="button"
             >
               Back to Login

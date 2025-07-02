@@ -13,6 +13,23 @@ import NotificationPanel from "../Dashboard/NotificationPanel";
 import { useTheme } from "../../services/ThemeContext";
 import { BsSun, BsMoon } from "react-icons/bs";
 import { FaUserCircle } from "react-icons/fa";
+import { malaysiaStates, malaysiaCities } from "../../utils/malaysiaData";
+
+// Success Popup Component
+const ProfileSuccessPopup = ({ onClose }) => {
+  return (
+    <div className="popup-overlay">
+      <div className="popup-content employee-success-popup">
+        <div className="employee-success-icon">✓</div>
+        <h2>Success</h2>
+        <p>Your profile has been updated successfully!</p>
+        <button className="ok-button" onClick={onClose}>
+          OK
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -23,7 +40,7 @@ const Profile = () => {
     username: "",
     phoneNumber: "",
     email: "",
-    country: "",
+    country: "Malaysia", // Default to Malaysia
     state: "",
     city: "",
     address: "",
@@ -31,52 +48,62 @@ const Profile = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
+  const [availableCities, setAvailableCities] = useState([]);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const fetchUserData = async () => {
-      const user = auth.currentUser;
-      if (!user) {
-        navigate("/");
-        return;
-      }
-
-      const userDoc = await getDoc(doc(db, "users", user.uid));
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        setUserRole(userData.role);
-
-        // Set display name from profile or email
-        if (userData.name) {
-          setUserName(userData.name);
-        } else {
-          setUserName(user.email.split("@")[0]);
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          navigate("/");
+          return;
         }
 
-        // Set profile data
-        setProfileData({
-          name: userData.name || "",
-          username: userData.username || "",
-          phoneNumber: userData.phoneNumber || "",
-          email: userData.email || user.email,
-          country: userData.country || "",
-          state: userData.state || "",
-          city: userData.city || "",
-          address: userData.address || "",
-          postalCode: userData.postalCode || "",
-        });
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role);
 
-        setFormData({
-          name: userData.name || "",
-          username: userData.username || "",
-          phoneNumber: userData.phoneNumber || "",
-          email: userData.email || user.email,
-          country: userData.country || "",
-          state: userData.state || "",
-          city: userData.city || "",
-          address: userData.address || "",
-          postalCode: userData.postalCode || "",
-        });
+          // Set display name from profile or email
+          if (userData.name) {
+            setUserName(userData.name);
+          } else {
+            setUserName(user.email.split("@")[0]);
+          }
+
+          // Set profile data
+          const profileDataFromDb = {
+            name: userData.name || "",
+            username: userData.username || "",
+            phoneNumber: userData.phoneNumber || "",
+            email: userData.email || user.email,
+            country: "Malaysia", // Always set to Malaysia
+            state: userData.state || "",
+            city: userData.city || "",
+            address: userData.address || "",
+            postalCode: userData.postalCode || "",
+          };
+
+          setProfileData(profileDataFromDb);
+          setFormData(profileDataFromDb);
+
+          // Check if malaysiaCities is defined before accessing it
+          if (
+            typeof malaysiaCities !== "undefined" &&
+            userData.state &&
+            malaysiaStates.includes(userData.state) &&
+            malaysiaCities[userData.state]
+          ) {
+            setAvailableCities(malaysiaCities[userData.state]);
+          } else {
+            setAvailableCities([]);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setAvailableCities([]);
       }
     };
 
@@ -95,6 +122,9 @@ const Profile = () => {
       await updateUserProfile(user.uid, formData);
       setProfileData(formData);
       setIsEditing(false);
+
+      // Show success popup
+      setShowSuccessPopup(true);
     } catch (error) {
       console.error("Error updating profile:", error);
     }
@@ -105,12 +135,30 @@ const Profile = () => {
     setIsEditing(false);
   };
 
+  const handleCloseSuccessPopup = () => {
+    setShowSuccessPopup(false);
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
+
+    // If state is changed, update the available cities and reset the city
+    if (name === "state") {
+      // Only set cities if the state exists in our data
+      const cities = value && malaysiaCities ? malaysiaCities[value] || [] : [];
+      setAvailableCities(cities);
+
+      setFormData({
+        ...formData,
+        [name]: value,
+        city: "", // Reset city when state changes
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
   };
 
   return (
@@ -220,25 +268,31 @@ const Profile = () => {
                 <input
                   type="text"
                   name="country"
-                  value={formData.country}
-                  onChange={handleInputChange}
-                  placeholder="Enter country"
+                  value="Malaysia"
+                  disabled
+                  className="disabled-input"
                 />
               ) : (
-                <div className="profile-value">{profileData.country}</div>
+                <div className="profile-value">Malaysia</div>
               )}
             </div>
 
             <div className="profile-field">
               <label>State</label>
               {isEditing ? (
-                <input
-                  type="text"
+                <select
                   name="state"
                   value={formData.state}
                   onChange={handleInputChange}
-                  placeholder="Enter state/province"
-                />
+                  required
+                >
+                  <option value="">Select State</option>
+                  {malaysiaStates.map((state) => (
+                    <option key={state} value={state}>
+                      {state}
+                    </option>
+                  ))}
+                </select>
               ) : (
                 <div className="profile-value">{profileData.state}</div>
               )}
@@ -247,13 +301,20 @@ const Profile = () => {
             <div className="profile-field">
               <label>City</label>
               {isEditing ? (
-                <input
-                  type="text"
+                <select
                   name="city"
                   value={formData.city}
                   onChange={handleInputChange}
-                  placeholder="Enter city"
-                />
+                  required
+                  disabled={!formData.state}
+                >
+                  <option value="">Select City</option>
+                  {availableCities.map((city) => (
+                    <option key={city} value={city}>
+                      {city}
+                    </option>
+                  ))}
+                </select>
               ) : (
                 <div className="profile-value">{profileData.city}</div>
               )}
@@ -304,6 +365,11 @@ const Profile = () => {
       </div>
 
       <NotificationPanel />
+
+      {/* Success Popup */}
+      {showSuccessPopup && (
+        <ProfileSuccessPopup onClose={handleCloseSuccessPopup} />
+      )}
     </div>
   );
 };

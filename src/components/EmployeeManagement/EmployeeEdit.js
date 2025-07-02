@@ -91,9 +91,8 @@ const EmployeeEdit = () => {
 
       // Record the activity
       const user = auth.currentUser;
-      const userName = user.displayName || user.email.split("@")[0];
       await recordActivity(
-        userName,
+        user,
         `Updated employee ${formData.employeeName} (${formData.employeeNumber})`
       );
 

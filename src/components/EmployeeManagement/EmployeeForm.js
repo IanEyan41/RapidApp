@@ -16,7 +16,7 @@ const EmployeeForm = ({ isOpen, onClose, onSubmit }) => {
     shift: "A",
     department: "Production",
     location: "",
-    routeCode: "89",
+    routeCode: "1",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -62,7 +62,7 @@ const EmployeeForm = ({ isOpen, onClose, onSubmit }) => {
         shift: "A",
         department: "Production",
         location: "",
-        routeCode: "89",
+        routeCode: "1",
       });
     } catch (err) {
       console.error("Error adding document: ", err);
@@ -221,14 +221,18 @@ const EmployeeForm = ({ isOpen, onClose, onSubmit }) => {
               <h3>Route Assignment</h3>
               <div className="form-group">
                 <label>Route Code</label>
-                <input
-                  type="text"
+                <select
                   name="routeCode"
                   value={formData.routeCode}
                   onChange={handleChange}
-                  placeholder="89"
                   required
-                />
+                >
+                  {[...Array(46)].map((_, index) => (
+                    <option key={index + 1} value={(index + 1).toString()}>
+                      {index + 1}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -248,11 +252,9 @@ const EmployeeForm = ({ isOpen, onClose, onSubmit }) => {
         </div>
       </div>
 
-      <EmployeeSuccessPopup
-        isOpen={showSuccessPopup}
-        onClose={handleSuccessClose}
-        employeeName={formData.employeeName}
-      />
+      {showSuccessPopup && (
+        <EmployeeSuccessPopup onClose={handleSuccessClose} />
+      )}
     </>
   );
 };

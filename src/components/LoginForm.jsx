@@ -3,15 +3,19 @@ import { useNavigate, Link } from "react-router-dom";
 import "../App.css";
 import amtelLogo from "../Asset/Amtel_logo.png";
 import { loginWithEmailAndPassword } from "../services/firebase";
+import { useTheme } from "../services/ThemeContext";
+import { BsSun, BsMoon, BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [isSuperAdmin, setIsSuperAdmin] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -44,8 +48,12 @@ const LoginForm = () => {
     setError(""); // Clear any previous errors
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
-    <div className="login-form login-only">
+    <div className={`login-form login-only ${theme}-theme`}>
       <div className="login-toggle-container">
         <div className="segmented-control">
           <button
@@ -63,6 +71,14 @@ const LoginForm = () => {
             Super Admin
           </button>
         </div>
+      </div>
+
+      <div className="login-theme-toggle" onClick={toggleTheme}>
+        {theme === "dark" ? (
+          <BsSun className="theme-icon" />
+        ) : (
+          <BsMoon className="theme-icon" />
+        )}
       </div>
 
       <img src={amtelLogo} alt="Amtel Logo" className="logo" />
@@ -88,7 +104,7 @@ const LoginForm = () => {
           <label>Password</label>
           <div className="password-input">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={
@@ -98,6 +114,14 @@ const LoginForm = () => {
               }
               required
             />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={togglePasswordVisibility}
+              tabIndex="-1"
+            >
+              {showPassword ? <BsEyeSlashFill /> : <BsEyeFill />}
+            </button>
           </div>
         </div>
 

@@ -53,9 +53,8 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
 
       // Record the activity
       const user = auth.currentUser;
-      const userName = user.displayName || user.email.split("@")[0];
       await recordActivity(
-        userName,
+        user,
         `Created overtime request for ${overtimeData.employeeName} (${overtimeData.employeeNumber})`
       );
 
