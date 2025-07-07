@@ -100,7 +100,7 @@ const Sidebar = ({ userRole }) => {
         {
           icon: <FaBuilding />,
           label: "Vendor Form",
-          path: "/vendor-form",
+          path: "/vendor-management",
         },
         {
           icon: <FaBus />,
@@ -142,7 +142,7 @@ const Sidebar = ({ userRole }) => {
           {
             icon: <FaBuilding />,
             label: "Vendor Form",
-            path: "/vendor-form",
+            path: "/vendor-management",
           },
           {
             icon: <FaBus />,

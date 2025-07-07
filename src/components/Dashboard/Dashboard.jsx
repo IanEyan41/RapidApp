@@ -25,8 +25,8 @@ import { FaUserCircle } from "react-icons/fa";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState("");
-  const [department, setDepartment] = useState("");
   const [userName, setUserName] = useState("");
+  const [department, setDepartment] = useState("");
   const { theme, toggleTheme } = useTheme();
   const [stats, setStats] = useState({
     employees: { value: 1234, change: "95% from total" },

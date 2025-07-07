@@ -27,6 +27,8 @@ import { PopupProvider } from "./services/PopupContext";
 import PowerBIDashboard from "./components/Dashboard/PowerBIDashboard";
 import Profile from "./components/Profile/Profile";
 import SuccessPopup from "./components/SuccessPopup";
+import VendorManagement from "./components/VendorManagement/VendorManagement";
+import Sidebar from "./components/Dashboard/Sidebar";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -61,7 +63,13 @@ function App() {
               path="/"
               element={
                 user ? (
-                  <Navigate to="/dashboard" replace />
+                  <div className="App">
+                    <Sidebar userRole={userRole} />
+                    <div className="main-content">
+                      <h1>Welcome Home!</h1>
+                      {/* You can add more home page content here */}
+                    </div>
+                  </div>
                 ) : (
                   <div className="App">
                     <div className="login-container">
@@ -168,6 +176,12 @@ function App() {
             <Route
               path="/driver-management/edit/:id"
               element={user ? <DriverEdit /> : <Navigate to="/" replace />}
+            />
+            <Route
+              path="/vendor-management"
+              element={
+                user ? <VendorManagement /> : <Navigate to="/" replace />
+              }
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
