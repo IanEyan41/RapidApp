@@ -245,3 +245,159 @@
   max-width: calc(100% - 250px);
   margin-left: auto;
 }
+
+/* Approval Status Section */
+.approval-status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.status-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-label {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #333;
+}
+
+.status-badge-large {
+  padding: 0.5rem 1.5rem;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge-large.pending {
+  background-color: #ffeeba;
+  color: #856404;
+}
+
+.status-badge-large.approved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.status-badge-large.rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.approval-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.approval-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.approval-dept {
+  font-weight: 500;
+  min-width: 150px;
+}
+
+.approval-status {
+  padding: 0.25rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.approval-status.approved {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.approval-status.rejected {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.approval-status.pending {
+  background-color: #ffeeba;
+  color: #856404;
+}
+
+.approval-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.approval-message {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
+
+.approval-buttons {
+  display: flex;
+  gap: 1rem;
+}
+
+.approve-button,
+.reject-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.approve-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.approve-button:hover {
+  background-color: #218838;
+}
+
+.reject-button {
+  background-color: #dc3545;
+  color: white;
+}
+
+.reject-button:hover {
+  background-color: #c82333;
+}
+
+.approve-button:disabled,
+.reject-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Dark Theme Styles for Approval Section */
+.dark-theme .approval-status-container {
+  background-color: #2d3035;
+}
+
+.dark-theme .status-label {
+  color: #e0e0e0;
+}
+
+.dark-theme .approval-message {
+  color: #b0b0b0;
+}

@@ -16,8 +16,28 @@ import OvertimeForm from "./OvertimeForm";
 import Sidebar from "../Dashboard/Sidebar";
 import { useTheme } from "../../services/ThemeContext";
 import { BsSun, BsMoon } from "react-icons/bs";
-import { FaSearch, FaPlus, FaEllipsisH } from "react-icons/fa";
+import { FaSearch, FaPlus, FaEllipsisH, FaCheckCircle } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
+
+// Success Popup Component
+const SuccessPopup = ({ isOpen, onClose, message }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="popup-overlay">
+      <div className="success-popup">
+        <div className="success-icon-circle">
+          <div className="checkmark">✓</div>
+        </div>
+        <h3>Success</h3>
+        <p>{message}</p>
+        <button className="success-button" onClick={onClose}>
+          OK
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const OvertimeManagement = () => {
   const navigate = useNavigate();
@@ -31,6 +51,7 @@ const OvertimeManagement = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
 
   // Fetch user data
   useEffect(() => {
@@ -127,6 +148,9 @@ const OvertimeManagement = () => {
   const handleDelete = async (overtimeId, employeeName, employeeNumber) => {
     try {
       await deleteDoc(doc(db, "overtime-management", overtimeId));
+      setSuccessMessage(
+        `Overtime request for ${employeeName} has been deleted.`
+      );
       setShowSuccessPopup(true);
     } catch (error) {
       console.error("Error deleting overtime request:", error);
@@ -136,6 +160,12 @@ const OvertimeManagement = () => {
 
   const handleAddForm = () => {
     setIsFormOpen(true);
+  };
+
+  const handleFormSubmit = () => {
+    setIsFormOpen(false);
+    setSuccessMessage("Overtime request has been successfully created.");
+    setShowSuccessPopup(true);
   };
 
   const formatDate = (dateStr) => {
@@ -283,10 +313,13 @@ const OvertimeManagement = () => {
       <OvertimeForm
         isOpen={isFormOpen}
         onClose={() => setIsFormOpen(false)}
-        onSubmit={() => {
-          setIsFormOpen(false);
-          setShowSuccessPopup(true);
-        }}
+        onSubmit={handleFormSubmit}
+      />
+
+      <SuccessPopup
+        isOpen={showSuccessPopup}
+        onClose={() => setShowSuccessPopup(false)}
+        message={successMessage}
       />
     </div>
   );

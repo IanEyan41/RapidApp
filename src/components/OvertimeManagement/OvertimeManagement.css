@@ -325,3 +325,100 @@
   background-color: rgba(220, 53, 69, 0.1);
   color: #dc3545;
 }
+
+/* Success Popup Styles */
+.popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.success-popup {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 2rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.success-icon-circle {
+  width: 70px;
+  height: 70px;
+  background-color: #e63946;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+
+.checkmark {
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.success-popup h3 {
+  color: #333;
+  margin: 0 0 1rem;
+  font-size: 1.8rem;
+  font-weight: 500;
+}
+
+.success-popup p {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+.success-button {
+  background-color: #e63946;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+
+.success-button:hover {
+  background-color: #d32f2f;
+}
+
+/* Dark theme styles for success popup */
+.dark-theme .success-popup {
+  background-color: #22252a;
+}
+
+.dark-theme .success-popup h3 {
+  color: white;
+}
+
+.dark-theme .success-popup p {
+  color: #b0b0b0;
+}

@@ -25,6 +25,7 @@ import { FaUserCircle } from "react-icons/fa";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState("");
+  const [department, setDepartment] = useState("");
   const [userName, setUserName] = useState("");
   const { theme, toggleTheme } = useTheme();
   const [stats, setStats] = useState({
@@ -45,7 +46,8 @@ const Dashboard = () => {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setUserRole(userData.department || "");
+        setUserRole(userData.role);
+        setDepartment(userData.department || userData.role);
         console.log("User department detected:", userData.department);
 
         // Use name from profile if available, otherwise fallback to email username
@@ -214,7 +216,7 @@ const Dashboard = () => {
 
   return (
     <div className={`dashboard-container ${theme}-theme`}>
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={department || userRole} />
 
       <div className="main-content">
         <header className="dashboard-header">

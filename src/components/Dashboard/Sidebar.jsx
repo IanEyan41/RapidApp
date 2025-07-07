@@ -29,6 +29,7 @@ const Sidebar = ({ userRole }) => {
     return saved ? JSON.parse(saved) : false;
   });
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
+  const isSuperAdmin = userRole && userRole.toLowerCase() === "superadmin";
 
   // Save isFormsOpen state to localStorage whenever it changes
   useEffect(() => {
@@ -73,13 +74,38 @@ const Sidebar = ({ userRole }) => {
   const getFormsByDepartment = () => {
     const department = userRole ? userRole.toLowerCase() : "";
 
-    // Special case for superadmin
+    // Special case for superadmin - provide access to all forms
     if (department === "superadmin") {
       return [
         {
           icon: <FaUserPlus />,
           label: "Register Admin",
           path: "/admin/register",
+        },
+        {
+          icon: <FaUsers />,
+          label: "Employee Form",
+          path: "/employee-management",
+        },
+        {
+          icon: <FaClock />,
+          label: "Overtime Form",
+          path: "/overtime-management",
+        },
+        {
+          icon: <FaCar />,
+          label: "Driver Form",
+          path: "/driver-management",
+        },
+        {
+          icon: <FaBuilding />,
+          label: "Vendor Form",
+          path: "/vendor-form",
+        },
+        {
+          icon: <FaBus />,
+          label: "Vehicle Form",
+          path: "/bus-form",
         },
       ];
     }
@@ -149,7 +175,9 @@ const Sidebar = ({ userRole }) => {
   const isDashboardPage = location.pathname === "/powerbi-dashboard";
   const isRegisterPage = location.pathname === "/admin/register";
   const isProfilePage = location.pathname === "/profile";
-  const isSuperAdmin = userRole && userRole.toLowerCase() === "superadmin";
+
+  // Always show forms for superadmin, or if there are available forms for other roles
+  const shouldShowForms = isSuperAdmin || availableForms.length > 0;
 
   return (
     <>
@@ -191,7 +219,7 @@ const Sidebar = ({ userRole }) => {
                   <span>Register Admin</span>
                 </li>
               )}
-              {availableForms.length > 0 && (
+              {shouldShowForms && (
                 <>
                   <li
                     className={`dropdown-trigger ${isFormsOpen ? "open" : ""} ${

@@ -161,14 +161,6 @@ const OvertimeDetail = () => {
           <div className="detail-header">
             <h2>Overtime Details</h2>
             <div className="header-actions">
-              <div
-                className={`status-badge ${overtimeData.status || "pending"}`}
-              >
-                {overtimeData.status
-                  ? overtimeData.status.charAt(0).toUpperCase() +
-                    overtimeData.status.slice(1)
-                  : "Pending"}
-              </div>
               <button className="edit-button" onClick={handleEdit}>
                 Edit
               </button>
@@ -255,24 +247,88 @@ const OvertimeDetail = () => {
             </div>
           </section>
 
-          {canApprove && (
-            <div className="approval-actions">
-              <button
-                className="reject-button"
-                onClick={() => handleApprovalAction("reject")}
-                disabled={isUpdating}
-              >
-                Reject
-              </button>
-              <button
-                className="approve-button"
-                onClick={() => handleApprovalAction("approve")}
-                disabled={isUpdating}
-              >
-                Approve
-              </button>
+          <section className="detail-section">
+            <h3>Approval Status</h3>
+            <div className="approval-status-container">
+              <div className="status-info">
+                <div className="status-label">Current Status:</div>
+                <div
+                  className={`status-badge-large ${
+                    overtimeData.status || "pending"
+                  }`}
+                >
+                  {overtimeData.status
+                    ? overtimeData.status.charAt(0).toUpperCase() +
+                      overtimeData.status.slice(1)
+                    : "Pending"}
+                </div>
+              </div>
+
+              <div className="approval-details">
+                <div className="approval-item">
+                  <span className="approval-dept">Transport:</span>
+                  <span
+                    className={`approval-status ${
+                      overtimeData.approvals?.transport === true
+                        ? "approved"
+                        : overtimeData.approvals?.transport === false
+                        ? "rejected"
+                        : "pending"
+                    }`}
+                  >
+                    {overtimeData.approvals?.transport === true
+                      ? "Approved"
+                      : overtimeData.approvals?.transport === false
+                      ? "Rejected"
+                      : "Pending"}
+                  </span>
+                </div>
+                <div className="approval-item">
+                  <span className="approval-dept">Human Resources:</span>
+                  <span
+                    className={`approval-status ${
+                      overtimeData.approvals?.["human resources"] === true
+                        ? "approved"
+                        : overtimeData.approvals?.["human resources"] === false
+                        ? "rejected"
+                        : "pending"
+                    }`}
+                  >
+                    {overtimeData.approvals?.["human resources"] === true
+                      ? "Approved"
+                      : overtimeData.approvals?.["human resources"] === false
+                      ? "Rejected"
+                      : "Pending"}
+                  </span>
+                </div>
+              </div>
             </div>
-          )}
+
+            {canApprove && (
+              <div className="approval-actions">
+                <div className="approval-message">
+                  As a {department} department member, you can approve or reject
+                  this request.
+                </div>
+                <div className="approval-buttons">
+                  <button
+                    className="reject-button"
+                    onClick={() => handleApprovalAction("reject")}
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? "Processing..." : "Reject Request"}
+                  </button>
+                  <button
+                    className="approve-button"
+                    onClick={() => handleApprovalAction("approve")}
+                    disabled={isUpdating}
+                  >
+                    {isUpdating ? "Processing..." : "Approve Request"}
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
         </div>
       </div>
     </div>
