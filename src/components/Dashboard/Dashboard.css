@@ -228,7 +228,7 @@ body::-webkit-scrollbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 80%;
+  width: calc(100% - 50px);
   padding-right: 15px;
 }
 
@@ -248,8 +248,7 @@ body::-webkit-scrollbar {
 .dropdown-menu {
   margin-left: 20px;
   margin-top: 5px;
-  width: calc(100% - 20px);
-  overflow: hidden;
+  width: calc(100% - 50px);
 }
 
 .dropdown-menu li {
@@ -1033,6 +1032,26 @@ body::-webkit-scrollbar {
 .dark-theme .activity-type-badge.admin {
   background-color: rgba(156, 39, 176, 0.2);
   color: #ba68c8;
+}
+
+/* Activity Type Badge Colors */
+.activity-type-badge.approved {
+  background-color: var(--success-color, #28a745);
+  color: white;
+}
+
+.activity-type-badge.rejected {
+  background-color: var(--danger-color, #dc3545);
+  color: white;
+}
+
+/* Activity Item Status Colors */
+.activity-item.approved {
+  border-left: 4px solid var(--success-color, #28a745);
+}
+
+.activity-item.rejected {
+  border-left: 4px solid var(--danger-color, #dc3545);
 }
 
 /* Confirmation Dialog Styles */

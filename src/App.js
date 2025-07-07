@@ -16,6 +16,9 @@ import OvertimeEdit from "./components/OvertimeManagement/OvertimeEdit";
 import EmployeeManagement from "./components/EmployeeManagement/EmployeeManagement";
 import EmployeeDetail from "./components/EmployeeManagement/EmployeeDetail";
 import EmployeeEdit from "./components/EmployeeManagement/EmployeeEdit";
+import DriverManagement from "./components/DriverManagement/DriverManagement";
+import DriverDetail from "./components/DriverManagement/DriverDetail";
+import DriverEdit from "./components/DriverManagement/DriverEdit";
 import { auth } from "./services/firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { getUserRole } from "./services/firebase";
@@ -151,6 +154,20 @@ function App() {
             <Route
               path="/employee-management/edit/:id"
               element={user ? <EmployeeEdit /> : <Navigate to="/" replace />}
+            />
+            <Route
+              path="/driver-management"
+              element={
+                user ? <DriverManagement /> : <Navigate to="/" replace />
+              }
+            />
+            <Route
+              path="/driver-management/detail/:id"
+              element={user ? <DriverDetail /> : <Navigate to="/" replace />}
+            />
+            <Route
+              path="/driver-management/edit/:id"
+              element={user ? <DriverEdit /> : <Navigate to="/" replace />}
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

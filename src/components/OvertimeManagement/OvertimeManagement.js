@@ -25,6 +25,7 @@ const OvertimeManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedShifts, setSelectedShifts] = useState(["A"]);
   const [userRole, setUserRole] = useState("");
+  const [department, setDepartment] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [overtimeData, setOvertimeData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -42,7 +43,9 @@ const OvertimeManagement = () => {
         }
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
-          setUserRole(userDoc.data().role);
+          const userData = userDoc.data();
+          setUserRole(userData.role);
+          setDepartment(userData.department || userData.role); // Use department if available, fallback to role
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
@@ -143,7 +146,7 @@ const OvertimeManagement = () => {
 
   return (
     <div className={`ot-management-container ${theme}-theme`}>
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={department || userRole} />
       <div className="ot-main-content">
         <header className="ot-header">
           <h1>Overtime Management</h1>

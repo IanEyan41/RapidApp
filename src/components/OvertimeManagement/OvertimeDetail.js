@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { db } from "../../services/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { db, auth } from "../../services/firebase";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import "./OvertimeDetail.css";
 import { BsArrowLeft } from "react-icons/bs";
 import Sidebar from "../Dashboard/Sidebar";
@@ -15,11 +15,29 @@ const OvertimeDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userRole, setUserRole] = useState("");
+  const [department, setDepartment] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
   const { theme, toggleTheme } = useTheme();
 
+  // Fetch user data and overtime details
   useEffect(() => {
-    const fetchOvertimeDetail = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch user data
+        const user = auth.currentUser;
+        if (!user) {
+          navigate("/");
+          return;
+        }
+
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role);
+          setDepartment(userData.department || userData.role);
+        }
+
+        // Fetch overtime details
         const docRef = doc(db, "overtime-management", id);
         const docSnap = await getDoc(docRef);
 
@@ -29,17 +47,74 @@ const OvertimeDetail = () => {
           setError("Overtime record not found");
         }
       } catch (err) {
-        console.error("Error fetching overtime details:", err);
-        setError("Failed to fetch overtime details");
+        console.error("Error fetching data:", err);
+        setError("Failed to fetch data");
       } finally {
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchOvertimeDetail();
+    fetchData();
+  }, [id, navigate]);
+
+  // Check if user can approve (Transport or HR)
+  const canApprove =
+    department?.toLowerCase() === "transport" ||
+    department?.toLowerCase() === "human resources";
+
+  // Handle approval/rejection
+  const handleApprovalAction = async (action) => {
+    if (!canApprove || isUpdating) return;
+
+    setIsUpdating(true);
+    try {
+      const docRef = doc(db, "overtime-management", id);
+      const currentDate = new Date();
+      const dateIn = new Date(overtimeData.dateIn);
+
+      let newStatus;
+      let approvals = overtimeData.approvals || {};
+      approvals[department.toLowerCase()] = action === "approve";
+
+      // Check approval conditions
+      const transportApproved = approvals["transport"] === true;
+      const hrApproved = approvals["human resources"] === true;
+      const transportRejected = approvals["transport"] === false;
+      const hrRejected = approvals["human resources"] === false;
+
+      // Determine status based on conditions
+      if (transportApproved && hrApproved) {
+        newStatus = "approved";
+      } else if (transportRejected || hrRejected || currentDate >= dateIn) {
+        newStatus = "rejected";
+      } else {
+        newStatus = "pending";
+      }
+
+      await updateDoc(docRef, {
+        status: newStatus,
+        approvals,
+        lastUpdated: new Date().toISOString(),
+        [`${department.toLowerCase()}Action`]: {
+          action,
+          timestamp: new Date().toISOString(),
+          by: auth.currentUser.email,
+        },
+      });
+
+      // Update local state
+      setOvertimeData((prev) => ({
+        ...prev,
+        status: newStatus,
+        approvals,
+      }));
+    } catch (err) {
+      console.error("Error updating approval status:", err);
+      setError("Failed to update approval status");
+    } finally {
+      setIsUpdating(false);
     }
-  }, [id]);
+  };
 
   const handleBack = () => {
     navigate("/overtime-management");
@@ -63,7 +138,7 @@ const OvertimeDetail = () => {
 
   return (
     <div className={`ot-management-container ${theme}-theme`}>
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={department || userRole} />
       <div className="ot-main-content">
         <header className="ot-header">
           <h1>Overtime Details</h1>
@@ -85,9 +160,19 @@ const OvertimeDetail = () => {
         <div className="overtime-detail-content">
           <div className="detail-header">
             <h2>Overtime Details</h2>
-            <button className="edit-button" onClick={handleEdit}>
-              Edit
-            </button>
+            <div className="header-actions">
+              <div
+                className={`status-badge ${overtimeData.status || "pending"}`}
+              >
+                {overtimeData.status
+                  ? overtimeData.status.charAt(0).toUpperCase() +
+                    overtimeData.status.slice(1)
+                  : "Pending"}
+              </div>
+              <button className="edit-button" onClick={handleEdit}>
+                Edit
+              </button>
+            </div>
           </div>
 
           <section className="detail-section">
@@ -169,6 +254,25 @@ const OvertimeDetail = () => {
               </div>
             </div>
           </section>
+
+          {canApprove && (
+            <div className="approval-actions">
+              <button
+                className="reject-button"
+                onClick={() => handleApprovalAction("reject")}
+                disabled={isUpdating}
+              >
+                Reject
+              </button>
+              <button
+                className="approve-button"
+                onClick={() => handleApprovalAction("approve")}
+                disabled={isUpdating}
+              >
+                Approve
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

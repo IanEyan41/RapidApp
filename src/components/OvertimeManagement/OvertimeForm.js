@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import "./OvertimeForm.css";
 import { db, auth, recordActivity } from "../../services/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  getDoc,
+} from "firebase/firestore";
 import { useTheme } from "../../services/ThemeContext";
 
 const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
@@ -31,17 +37,66 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
     }));
   };
 
+  const createNotification = async (user, overtimeData, docId) => {
+    try {
+      console.log("Creating notification for:", {
+        user: user.displayName || user.email,
+        overtimeData,
+        docId,
+      });
+
+      // Get user profile to get the username
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      const userData = userDoc.exists() ? userDoc.data() : null;
+      const username =
+        userData?.username || userData?.name || user.displayName || user.email;
+
+      const notificationData = {
+        user: username, // Use username instead of email
+        userId: user.uid, // Store user ID for future reference
+        timestamp: serverTimestamp(),
+        title: "New OT Request",
+        message: `Kindly approve or disapprove this new request from ${overtimeData.employeeName}.`,
+        status: "pending",
+        overtimeId: docId, // Reference to the overtime request
+        type: "overtime_request",
+      };
+
+      console.log("Notification data:", notificationData);
+
+      const docRef = await addDoc(
+        collection(db, "notification"),
+        notificationData
+      );
+      console.log("Notification created with ID:", docRef.id);
+
+      return docRef;
+    } catch (error) {
+      console.error("Error creating notification:", error);
+      console.error("Error details:", {
+        code: error.code,
+        message: error.message,
+        stack: error.stack,
+      });
+      // Don't throw the error - we don't want to fail the whole submission if notification fails
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
 
     try {
+      const user = auth.currentUser;
+
       // Add timestamp to the form data
       const overtimeData = {
         ...formData,
         createdAt: serverTimestamp(),
         status: "pending", // Adding a default status
+        createdBy: user.uid, // Add user ID who created the request
+        createdByName: user.displayName || user.email, // Add user name who created the request
       };
 
       // Add document to Firestore
@@ -51,8 +106,10 @@ const OvertimeForm = ({ isOpen, onClose, onSubmit }) => {
       );
       console.log("Document written with ID: ", docRef.id);
 
+      // Create notification
+      await createNotification(user, overtimeData, docRef.id);
+
       // Record the activity
-      const user = auth.currentUser;
       await recordActivity(
         user,
         `Created overtime request for ${overtimeData.employeeName} (${overtimeData.employeeNumber})`

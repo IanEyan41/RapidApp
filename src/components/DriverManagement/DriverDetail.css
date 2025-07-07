@@ -1,0 +1,296 @@
+/* Detail page container */
+.driver-detail-content {
+  background-color: white;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
+}
+
+/* Header section */
+.detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 15px;
+}
+
+.detail-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+}
+
+.edit-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #d70000;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.edit-button:hover {
+  background-color: #bd0000;
+}
+
+/* Detail sections */
+.detail-section {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 25px;
+}
+
+.detail-section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.detail-section h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Detail grid layout */
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.detail-item.full-width {
+  grid-column: span 2;
+}
+
+.detail-item label {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.detail-item span {
+  font-size: 16px;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Route display */
+.route-display {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.route-number {
+  font-size: 36px;
+  font-weight: 600;
+  color: white;
+  background-color: #d70000;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.route-path {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.route-stop {
+  background-color: #fff2f2;
+  color: #d70000;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.route-arrow {
+  color: #666;
+}
+
+/* License validity */
+.license-validity {
+  color: #28a745 !important;
+  font-weight: 600 !important;
+}
+
+/* Loading and error states */
+.driver-detail-loading,
+.driver-detail-error {
+  padding: 30px;
+  text-align: center;
+  color: #666;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-top: 20px;
+}
+
+.driver-detail-error {
+  color: #d70000;
+}
+
+/* Delete confirmation overlay */
+.delete-confirmation-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.confirmation-dialog {
+  background-color: white;
+  border-radius: 8px;
+  padding: 30px;
+  width: 400px;
+  max-width: 90%;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.confirmation-dialog h3 {
+  margin-top: 0;
+  color: #333;
+  font-size: 20px;
+}
+
+.confirmation-dialog p {
+  margin-bottom: 25px;
+  color: #555;
+}
+
+.confirmation-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.confirmation-actions button {
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+}
+
+.cancel-button {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.delete-button {
+  background-color: #d70000;
+  color: white;
+}
+
+.cancel-button:hover {
+  background-color: #e0e0e0;
+}
+
+.delete-button:hover {
+  background-color: #bd0000;
+}
+
+/* Dark theme adjustments */
+.dark-theme .driver-detail-content {
+  background-color: #2a2a2a;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.dark-theme .detail-header {
+  border-color: #444;
+}
+
+.dark-theme .detail-header h2 {
+  color: #f0f0f0;
+}
+
+.dark-theme .edit-button {
+  background-color: #ff5252;
+}
+
+.dark-theme .edit-button:hover {
+  background-color: #ff3838;
+}
+
+.dark-theme .detail-section {
+  border-color: #444;
+}
+
+.dark-theme .detail-section h3 {
+  color: #f0f0f0;
+}
+
+.dark-theme .detail-item label {
+  color: #aaa;
+}
+
+.dark-theme .detail-item span {
+  color: #e0e0e0;
+}
+
+.dark-theme .route-stop {
+  background-color: #3a2222;
+  color: #ff5252;
+}
+
+.dark-theme .route-arrow {
+  color: #999;
+}
+
+.dark-theme .license-validity {
+  color: #5ad879 !important;
+}
+
+.dark-theme .driver-detail-loading {
+  color: #aaa;
+  background-color: #2a2a2a;
+}
+
+.dark-theme .confirmation-dialog {
+  background-color: #2a2a2a;
+}
+
+.dark-theme .confirmation-dialog h3 {
+  color: #f0f0f0;
+}
+
+.dark-theme .confirmation-dialog p {
+  color: #ccc;
+}
+
+.dark-theme .cancel-button {
+  background-color: #444;
+  color: #e0e0e0;
+}
+
+.dark-theme .cancel-button:hover {
+  background-color: #555;
+}

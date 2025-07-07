@@ -12,6 +12,7 @@ const PowerBIDashboard = () => {
   const navigate = useNavigate();
   const [userRole, setUserRole] = useState("");
   const [userName, setUserName] = useState("");
+  const [department, setDepartment] = useState("");
   const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
@@ -26,6 +27,7 @@ const PowerBIDashboard = () => {
       if (userDoc.exists()) {
         const userData = userDoc.data();
         setUserRole(userData.role);
+        setDepartment(userData.department || userData.role); // Use department if available, fallback to role
 
         // Use name from profile if available, otherwise fallback to email username
         if (userData.name && userData.name.trim() !== "") {
@@ -73,7 +75,7 @@ const PowerBIDashboard = () => {
 
   return (
     <div className={`dashboard-container ${theme}-theme`}>
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={department || userRole} />
 
       <div className="main-content" style={powerBIStyles.mainContent}>
         <header className="dashboard-header" style={powerBIStyles.header}>

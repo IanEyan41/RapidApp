@@ -26,6 +26,7 @@ const EmployeeManagement = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedShifts, setSelectedShifts] = useState(["A"]);
   const [userRole, setUserRole] = useState("");
+  const [department, setDepartment] = useState("");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [employeeData, setEmployeeData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -43,7 +44,9 @@ const EmployeeManagement = () => {
         }
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
-          setUserRole(userDoc.data().role);
+          const userData = userDoc.data();
+          setUserRole(userData.role);
+          setDepartment(userData.department || userData.role); // Use department if available, fallback to role
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
@@ -177,7 +180,7 @@ const EmployeeManagement = () => {
 
   return (
     <div className={`em-management-container ${theme}-theme`}>
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={department || userRole} />
       <div className="em-main-content">
         <header className="em-header">
           <h1>Employee Management</h1>

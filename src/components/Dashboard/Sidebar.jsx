@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { logoutUser } from "../../services/firebase";
 import logo from "../../Asset/Amtel_logo.png";
@@ -23,8 +23,37 @@ import {
 const Sidebar = ({ userRole }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isFormsOpen, setIsFormsOpen] = useState(false);
+  const [isFormsOpen, setIsFormsOpen] = useState(() => {
+    // Initialize from localStorage, default to false if not set
+    const saved = localStorage.getItem("isFormsOpen");
+    return saved ? JSON.parse(saved) : false;
+  });
   const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
+
+  // Save isFormsOpen state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem("isFormsOpen", JSON.stringify(isFormsOpen));
+  }, [isFormsOpen]);
+
+  // Check if current path is a form page
+  const isFormPage = () => {
+    const formPaths = [
+      "/employee-management",
+      "/overtime-management",
+      "/driver-management",
+      "/vendor-form",
+      "/bus-form",
+    ];
+    // Check if current path starts with any of the form paths
+    return formPaths.some((path) => location.pathname.startsWith(path));
+  };
+
+  // Auto-open forms menu when on a form page
+  useEffect(() => {
+    if (isFormPage()) {
+      setIsFormsOpen(true);
+    }
+  }, [location.pathname]);
 
   const handleLogoutClick = () => {
     setShowLogoutConfirmation(true);
@@ -40,10 +69,23 @@ const Sidebar = ({ userRole }) => {
     setShowLogoutConfirmation(false);
   };
 
-  // Get forms based on user role
-  const getFormsByRole = () => {
-    switch (userRole) {
-      case "Human Resources":
+  // Get forms based on department
+  const getFormsByDepartment = () => {
+    const department = userRole ? userRole.toLowerCase() : "";
+
+    // Special case for superadmin
+    if (department === "superadmin") {
+      return [
+        {
+          icon: <FaUserPlus />,
+          label: "Register Admin",
+          path: "/admin/register",
+        },
+      ];
+    }
+
+    switch (department) {
+      case "human resources":
         return [
           {
             icon: <FaUsers />,
@@ -56,7 +98,7 @@ const Sidebar = ({ userRole }) => {
             path: "/overtime-management",
           },
         ];
-      case "Production":
+      case "production":
         return [
           {
             icon: <FaClock />,
@@ -64,39 +106,50 @@ const Sidebar = ({ userRole }) => {
             path: "/overtime-management",
           },
         ];
-      case "Transport":
+      case "transport":
         return [
+          {
+            icon: <FaCar />,
+            label: "Driver Form",
+            path: "/driver-management",
+          },
+          {
+            icon: <FaBuilding />,
+            label: "Vendor Form",
+            path: "/vendor-form",
+          },
+          {
+            icon: <FaBus />,
+            label: "Vehicle Form",
+            path: "/bus-form",
+          },
           {
             icon: <FaClock />,
             label: "Overtime Form",
             path: "/overtime-management",
           },
-          { icon: <FaCar />, label: "Driver Form", path: "/driver-form" },
-          { icon: <FaBus />, label: "Bus Form", path: "/bus-form" },
-          { icon: <FaBuilding />, label: "Vendor Form", path: "/vendor-form" },
         ];
       default:
-        return [
-          {
-            icon: <FaUsers />,
-            label: "Employee Form",
-            path: "/employee-management",
-          },
-          {
-            icon: <FaClock />,
-            label: "Overtime Form",
-            path: "/overtime-management",
-          },
-        ];
+        // Check if the department contains "production" for case insensitive matching
+        if (department.includes("production")) {
+          return [
+            {
+              icon: <FaClock />,
+              label: "Overtime Form",
+              path: "/overtime-management",
+            },
+          ];
+        }
+        return [];
     }
   };
 
-  const availableForms = getFormsByRole();
+  const availableForms = getFormsByDepartment();
   const isHomePage = location.pathname === "/dashboard";
   const isDashboardPage = location.pathname === "/powerbi-dashboard";
   const isRegisterPage = location.pathname === "/admin/register";
   const isProfilePage = location.pathname === "/profile";
-  const isSuperAdmin = userRole === "superadmin";
+  const isSuperAdmin = userRole && userRole.toLowerCase() === "superadmin";
 
   return (
     <>
@@ -141,7 +194,9 @@ const Sidebar = ({ userRole }) => {
               {availableForms.length > 0 && (
                 <>
                   <li
-                    className={`dropdown-trigger ${isFormsOpen ? "open" : ""}`}
+                    className={`dropdown-trigger ${isFormsOpen ? "open" : ""} ${
+                      isFormPage() ? "active" : ""
+                    }`}
                     onClick={() => setIsFormsOpen(!isFormsOpen)}
                   >
                     <span className="icon">
@@ -155,7 +210,15 @@ const Sidebar = ({ userRole }) => {
                   {isFormsOpen && (
                     <ul className="dropdown-menu">
                       {availableForms.map((form, index) => (
-                        <li key={index} onClick={() => navigate(form.path)}>
+                        <li
+                          key={index}
+                          className={
+                            location.pathname.startsWith(form.path)
+                              ? "active"
+                              : ""
+                          }
+                          onClick={() => navigate(form.path)}
+                        >
                           <span className="icon">{form.icon}</span>
                           <span>{form.label}</span>
                         </li>

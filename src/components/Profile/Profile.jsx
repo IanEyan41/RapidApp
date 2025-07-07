@@ -33,14 +33,15 @@ const ProfileSuccessPopup = ({ onClose }) => {
 
 const Profile = () => {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
   const [userRole, setUserRole] = useState("");
-  const [userName, setUserName] = useState("");
+  const [department, setDepartment] = useState("");
   const [profileData, setProfileData] = useState({
     name: "",
     username: "",
-    phoneNumber: "",
     email: "",
-    country: "Malaysia", // Default to Malaysia
+    phoneNumber: "",
+    country: "",
     state: "",
     city: "",
     address: "",
@@ -50,7 +51,6 @@ const Profile = () => {
   const [formData, setFormData] = useState({});
   const [availableCities, setAvailableCities] = useState([]);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
-  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -65,29 +65,19 @@ const Profile = () => {
         if (userDoc.exists()) {
           const userData = userDoc.data();
           setUserRole(userData.role);
-
-          // Set display name from profile or email
-          if (userData.name) {
-            setUserName(userData.name);
-          } else {
-            setUserName(user.email.split("@")[0]);
-          }
-
-          // Set profile data
-          const profileDataFromDb = {
+          setDepartment(userData.department || userData.role); // Use department if available, fallback to role
+          setProfileData({
             name: userData.name || "",
             username: userData.username || "",
+            email: user.email || "",
             phoneNumber: userData.phoneNumber || "",
-            email: userData.email || user.email,
-            country: "Malaysia", // Always set to Malaysia
+            country: userData.country || "",
             state: userData.state || "",
             city: userData.city || "",
             address: userData.address || "",
             postalCode: userData.postalCode || "",
-          };
-
-          setProfileData(profileDataFromDb);
-          setFormData(profileDataFromDb);
+          });
+          setFormData(userData);
 
           // Check if malaysiaCities is defined before accessing it
           if (
@@ -163,7 +153,7 @@ const Profile = () => {
 
   return (
     <div className={`dashboard-container ${theme}-theme`}>
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={department || userRole} />
 
       <div className="main-content">
         <header className="dashboard-header">
@@ -183,7 +173,9 @@ const Profile = () => {
               <div className="user-avatar">
                 <FaUserCircle className="user-icon" />
               </div>
-              <span className="user-name">{userName}</span>
+              <span className="user-name">
+                {profileData.name || profileData.username}
+              </span>
             </div>
           </div>
         </header>
@@ -268,12 +260,12 @@ const Profile = () => {
                 <input
                   type="text"
                   name="country"
-                  value="Malaysia"
-                  disabled
-                  className="disabled-input"
+                  value={formData.country}
+                  onChange={handleInputChange}
+                  placeholder="Enter country"
                 />
               ) : (
-                <div className="profile-value">Malaysia</div>
+                <div className="profile-value">{profileData.country}</div>
               )}
             </div>
 

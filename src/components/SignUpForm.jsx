@@ -5,6 +5,7 @@ import amtelLogo from "../Asset/Amtel_logo.png";
 import { createAdminUser, auth } from "../services/firebase";
 import SuccessPopup from "./SuccessPopup";
 import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
+import { malaysiaStates, malaysiaCities } from "../utils/malaysiaData";
 
 const SignUpForm = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const SignUpForm = () => {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [country, setCountry] = useState("");
+  const [country, setCountry] = useState("Malaysia");
   const [state, setState] = useState("");
   const [city, setCity] = useState("");
   const [address, setAddress] = useState("");
@@ -26,6 +27,7 @@ const SignUpForm = () => {
   const [loading, setLoading] = useState(false);
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [availableCities, setAvailableCities] = useState([]);
 
   const departments = ["Human Resources", "Production", "Transport"];
 
@@ -37,7 +39,7 @@ const SignUpForm = () => {
     setName("");
     setUsername("");
     setPhoneNumber("");
-    setCountry("");
+    setCountry("Malaysia");
     setState("");
     setCity("");
     setAddress("");
@@ -45,6 +47,19 @@ const SignUpForm = () => {
     setError("");
     setShowPassword(false);
     setShowConfirmPassword(false);
+    setAvailableCities([]);
+  };
+
+  const handleStateChange = (e) => {
+    const selectedState = e.target.value;
+    setState(selectedState);
+    setCity("");
+
+    if (selectedState && malaysiaCities[selectedState]) {
+      setAvailableCities(malaysiaCities[selectedState]);
+    } else {
+      setAvailableCities([]);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -245,29 +260,39 @@ const SignUpForm = () => {
             <input
               type="text"
               value={country}
-              onChange={(e) => setCountry(e.target.value)}
-              placeholder="Enter country"
+              disabled
+              placeholder="Malaysia"
+              className="disabled-input"
             />
           </div>
 
           <div className="form-group">
             <label>State</label>
-            <input
-              type="text"
-              value={state}
-              onChange={(e) => setState(e.target.value)}
-              placeholder="Enter state"
-            />
+            <select value={state} onChange={handleStateChange} required>
+              <option value="">Select State</option>
+              {malaysiaStates.map((stateName) => (
+                <option key={stateName} value={stateName}>
+                  {stateName}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">
             <label>City</label>
-            <input
-              type="text"
+            <select
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              placeholder="Enter city"
-            />
+              required
+              disabled={!state}
+            >
+              <option value="">Select City</option>
+              {availableCities.map((cityName) => (
+                <option key={cityName} value={cityName}>
+                  {cityName}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="form-group">

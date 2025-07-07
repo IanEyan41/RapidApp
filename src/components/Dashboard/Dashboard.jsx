@@ -45,7 +45,8 @@ const Dashboard = () => {
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         const userData = userDoc.data();
-        setUserRole(userData.role);
+        setUserRole(userData.department || "");
+        console.log("User department detected:", userData.department);
 
         // Use name from profile if available, otherwise fallback to email username
         if (userData.name && userData.name.trim() !== "") {
@@ -61,7 +62,8 @@ const Dashboard = () => {
 
   // Get available actions based on user role
   const getQuickActions = () => {
-    const isSuperAdmin = userRole === "superadmin";
+    const isSuperAdmin = userRole && userRole.toLowerCase() === "superadmin";
+    const department = userRole ? userRole.toLowerCase() : "";
 
     if (isSuperAdmin) {
       return [
@@ -76,12 +78,12 @@ const Dashboard = () => {
 
     const actions = [];
 
-    switch (userRole) {
-      case "Human Resources":
+    switch (department) {
+      case "human resources":
         actions.push(
           {
             icon: <FaUsers />,
-            label: "Add Employee",
+            label: "Add Employee Form",
             path: "/employee-management",
             color: "#d70000",
             onClick: () => {
@@ -95,7 +97,7 @@ const Dashboard = () => {
           },
           {
             icon: <FaClock />,
-            label: "Add Overtime",
+            label: "Add Overtime Form",
             path: "/overtime-management",
             color: "#d70000",
             onClick: () => {
@@ -109,78 +111,99 @@ const Dashboard = () => {
           }
         );
         break;
-      case "Production":
-        actions.push(
-          {
-            icon: <FaClock />,
-            label: "Overtime Form",
-            path: "/overtime-management",
-            color: "#d70000",
+      case "production":
+        actions.push({
+          icon: <FaClock />,
+          label: "Add Overtime Form",
+          path: "/overtime-management",
+          color: "#d70000",
+          onClick: () => {
+            navigate("/overtime-management");
+            // Small delay to ensure component is mounted
+            setTimeout(() => {
+              const addButton = document.querySelector(".ot-add-form-button");
+              if (addButton) addButton.click();
+            }, 100);
           },
-          {
-            icon: <FaFileAlt />,
-            label: "Create New Use Case",
-            path: "/use-case/new",
-            color: "#d70000",
-          },
-          {
-            icon: <FaChartBar />,
-            label: "Configure Dashboard Template",
-            path: "/dashboard/configure",
-            color: "#d70000",
-          }
-        );
+        });
         break;
-      case "Transport":
+      case "transport":
         actions.push(
-          {
-            icon: <FaClock />,
-            label: "Overtime Form",
-            path: "/overtime-management",
-            color: "#d70000",
-          },
           {
             icon: <FaCar />,
-            label: "Driver Form",
-            path: "/driver-form",
+            label: "Add Driver Form",
+            path: "/driver-management",
             color: "#d70000",
-          },
-          {
-            icon: <FaBus />,
-            label: "Bus Form",
-            path: "/bus-form",
-            color: "#d70000",
+            onClick: () => {
+              navigate("/driver-management");
+              // Small delay to ensure component is mounted
+              setTimeout(() => {
+                const addButton = document.querySelector(".dm-add-form-button");
+                if (addButton) addButton.click();
+              }, 100);
+            },
           },
           {
             icon: <FaBuilding />,
-            label: "Vendor Form",
+            label: "Add Vendor Form",
             path: "/vendor-form",
             color: "#d70000",
           },
           {
-            icon: <FaFileAlt />,
-            label: "Create Web Form",
-            path: "/web-form/new",
+            icon: <FaBus />,
+            label: "Add Vehicle Form",
+            path: "/bus-form",
             color: "#d70000",
+          },
+          {
+            icon: <FaClock />,
+            label: "Add Overtime Form",
+            path: "/overtime-management",
+            color: "#d70000",
+            onClick: () => {
+              navigate("/overtime-management");
+              // Small delay to ensure component is mounted
+              setTimeout(() => {
+                const addButton = document.querySelector(".ot-add-form-button");
+                if (addButton) addButton.click();
+              }, 100);
+            },
           }
         );
         break;
       default:
-        // Default actions for other roles
-        actions.push(
-          {
-            icon: <FaFileAlt />,
-            label: "Create New Use Case",
-            path: "/use-case/new",
+        // Check if the department includes "production" (case insensitive)
+        if (department.includes("production")) {
+          actions.push({
+            icon: <FaClock />,
+            label: "Add Overtime Form",
+            path: "/overtime-management",
             color: "#d70000",
-          },
-          {
-            icon: <FaFileAlt />,
-            label: "Create Web Form",
-            path: "/web-form/new",
-            color: "#d70000",
-          }
-        );
+            onClick: () => {
+              navigate("/overtime-management");
+              // Small delay to ensure component is mounted
+              setTimeout(() => {
+                const addButton = document.querySelector(".ot-add-form-button");
+                if (addButton) addButton.click();
+              }, 100);
+            },
+          });
+        } else {
+          actions.push(
+            {
+              icon: <FaFileAlt />,
+              label: "Create New Use Case",
+              path: "/use-case/new",
+              color: "#d70000",
+            },
+            {
+              icon: <FaFileAlt />,
+              label: "Create Web Form",
+              path: "/web-form/new",
+              color: "#d70000",
+            }
+          );
+        }
         break;
     }
 

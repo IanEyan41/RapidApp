@@ -18,9 +18,12 @@ const AllActivitiesPopup = ({ isOpen, onClose }) => {
   const [confirmDelete, setConfirmDelete] = useState(null);
 
   // Helper function to determine activity type
-  const getActivityType = (description) => {
+  const getActivityType = (description, status) => {
     const lowerDesc = description.toLowerCase();
     if (lowerDesc.includes("deleted")) return "delete";
+    if (lowerDesc.includes("approved")) return "approved";
+    if (lowerDesc.includes("rejected") || lowerDesc.includes("disapproved"))
+      return "rejected";
     if (lowerDesc.includes("added") || lowerDesc.includes("created"))
       return "create";
     if (lowerDesc.includes("updated") || lowerDesc.includes("modified"))
@@ -40,6 +43,10 @@ const AllActivitiesPopup = ({ isOpen, onClose }) => {
         return "Updated";
       case "admin":
         return "Admin";
+      case "approved":
+        return "Approved";
+      case "rejected":
+        return "Rejected";
       default:
         return "Action";
     }
@@ -60,7 +67,7 @@ const AllActivitiesPopup = ({ isOpen, onClose }) => {
           time: formatDistanceToNow(data.timestamp.toDate(), {
             addSuffix: true,
           }),
-          type: getActivityType(data.description),
+          type: getActivityType(data.description, data.status),
         };
       });
       setActivities(activitiesData);
@@ -75,7 +82,6 @@ const AllActivitiesPopup = ({ isOpen, onClose }) => {
       const activityRef = doc(db, "recent-activities", activityId);
       await deleteDoc(activityRef);
       setConfirmDelete(null);
-      // The activity will be removed from the list automatically due to the real-time listener
     } catch (error) {
       console.error("Error deleting activity:", error);
       setIsDeleting((prev) => ({ ...prev, [activityId]: false }));
@@ -104,6 +110,13 @@ const AllActivitiesPopup = ({ isOpen, onClose }) => {
                   <span className={`activity-type-badge ${activity.type}`}>
                     {getActivityTypeLabel(activity.type)}
                   </span>
+                  {activity.status && (
+                    <span
+                      className={`activity-type-badge ${activity.status.toLowerCase()}`}
+                    >
+                      {activity.status}
+                    </span>
+                  )}
                 </h4>
                 <p>{activity.description}</p>
               </div>

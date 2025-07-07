@@ -9,16 +9,27 @@ import {
 } from "firebase/firestore";
 import { formatDistanceToNow } from "date-fns";
 import AllActivitiesPopup from "./AllActivitiesPopup";
+import NotificationPopup from "./NotificationPopup";
 
-const NotificationPanel = () => {
+const NotificationPanel = ({ userDepartment }) => {
   const [notifications, setNotifications] = useState([]);
   const [activities, setActivities] = useState([]);
   const [showAllActivities, setShowAllActivities] = useState(false);
+  const [showAllNotifications, setShowAllNotifications] = useState(false);
+
+  // Helper function to format timestamp
+  const formatTimestamp = (timestamp) => {
+    if (!timestamp || !timestamp.toDate) return "";
+    return formatDistanceToNow(timestamp.toDate(), { addSuffix: true });
+  };
 
   // Helper function to determine activity type
-  const getActivityType = (description) => {
+  const getActivityType = (description, status) => {
     const lowerDesc = description.toLowerCase();
     if (lowerDesc.includes("deleted")) return "delete";
+    if (lowerDesc.includes("approved")) return "approved";
+    if (lowerDesc.includes("rejected") || lowerDesc.includes("disapproved"))
+      return "rejected";
     if (lowerDesc.includes("added") || lowerDesc.includes("created"))
       return "create";
     if (lowerDesc.includes("updated") || lowerDesc.includes("modified"))
@@ -38,9 +49,18 @@ const NotificationPanel = () => {
         return "Updated";
       case "admin":
         return "Admin";
+      case "approved":
+        return "Approved";
+      case "rejected":
+        return "Rejected";
       default:
         return "Action";
     }
+  };
+
+  // Helper function to determine if detailed message should be shown
+  const shouldShowDetailedMessage = (department) => {
+    return department === "Transport" || department === "Human Resource";
   };
 
   // Fetch recent activities (limited to 3)
@@ -58,10 +78,8 @@ const NotificationPanel = () => {
         return {
           id: doc.id,
           ...data,
-          time: formatDistanceToNow(data.timestamp.toDate(), {
-            addSuffix: true,
-          }),
-          type: getActivityType(data.description),
+          time: formatTimestamp(data.timestamp),
+          type: getActivityType(data.description, data.status),
         };
       });
       setActivities(activitiesData);
@@ -70,30 +88,28 @@ const NotificationPanel = () => {
     return () => unsubscribe();
   }, []);
 
-  // Mock notifications (limited to 3)
+  // Fetch notifications from Firestore (limited to 3)
   useEffect(() => {
-    setNotifications(
-      [
-        {
-          id: 1,
-          time: "10:40 AM Fri 10 April 2025",
-          title: "You received a new OT Request",
-          message: "Kindly approve or disapprove this new request.",
-        },
-        {
-          id: 2,
-          time: "10:40 AM Fri 10 April 2025",
-          title: "You received a new OT Request",
-          message: "Kindly approve or disapprove this new request.",
-        },
-        {
-          id: 3,
-          time: "10:40 AM Fri 10 April 2025",
-          title: "You received a new OT Request",
-          message: "Kindly approve or disapprove this new request.",
-        },
-      ].slice(0, 3)
+    const notificationsRef = collection(db, "notification");
+    const notificationsQuery = query(
+      notificationsRef,
+      orderBy("timestamp", "desc"),
+      limit(3)
     );
+
+    const unsubscribe = onSnapshot(notificationsQuery, (snapshot) => {
+      const notificationsData = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          ...data,
+          formattedTimestamp: formatTimestamp(data.timestamp),
+        };
+      });
+      setNotifications(notificationsData);
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return (
@@ -103,13 +119,24 @@ const NotificationPanel = () => {
         <div className="notifications-list">
           {notifications.map((notification) => (
             <div key={notification.id} className="notification-item">
-              <small>{notification.time}</small>
-              <h4>{notification.title}</h4>
-              <p>{notification.message}</p>
+              <small>{notification.formattedTimestamp}</small>
+              {shouldShowDetailedMessage(userDepartment) ? (
+                <>
+                  <h4>{notification.title}</h4>
+                  <p>{notification.message}</p>
+                </>
+              ) : (
+                <p>{notification.user} has applied a new OT Request</p>
+              )}
             </div>
           ))}
         </div>
-        <button className="see-all-btn">See All Notifications</button>
+        <button
+          className="see-all-btn"
+          onClick={() => setShowAllNotifications(true)}
+        >
+          See All Notifications
+        </button>
       </div>
 
       <div className="recent-activities">
@@ -123,6 +150,13 @@ const NotificationPanel = () => {
                 <span className={`activity-type-badge ${activity.type}`}>
                   {getActivityTypeLabel(activity.type)}
                 </span>
+                {activity.status && (
+                  <span
+                    className={`activity-type-badge ${activity.status.toLowerCase()}`}
+                  >
+                    {activity.status}
+                  </span>
+                )}
               </h4>
               <p>{activity.description}</p>
             </div>
@@ -139,6 +173,12 @@ const NotificationPanel = () => {
       <AllActivitiesPopup
         isOpen={showAllActivities}
         onClose={() => setShowAllActivities(false)}
+      />
+
+      <NotificationPopup
+        isOpen={showAllNotifications}
+        onClose={() => setShowAllNotifications(false)}
+        userDepartment={userDepartment}
       />
     </div>
   );
