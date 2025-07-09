@@ -105,7 +105,7 @@ const Sidebar = ({ userRole }) => {
         {
           icon: <FaBus />,
           label: "Vehicle Form",
-          path: "/bus-form",
+          path: "/vehicle-management",
         },
       ];
     }
@@ -147,7 +147,7 @@ const Sidebar = ({ userRole }) => {
           {
             icon: <FaBus />,
             label: "Vehicle Form",
-            path: "/bus-form",
+            path: "/vehicle-management",
           },
           {
             icon: <FaClock />,

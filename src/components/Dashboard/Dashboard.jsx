@@ -65,7 +65,7 @@ const Dashboard = () => {
   // Get available actions based on user role
   const getQuickActions = () => {
     const isSuperAdmin = userRole && userRole.toLowerCase() === "superadmin";
-    const department = userRole ? userRole.toLowerCase() : "";
+    const departmentValue = (department || userRole || "").toLowerCase();
 
     if (isSuperAdmin) {
       return [
@@ -80,7 +80,7 @@ const Dashboard = () => {
 
     const actions = [];
 
-    switch (department) {
+    switch (departmentValue) {
       case "human resources":
         actions.push(
           {
@@ -175,7 +175,7 @@ const Dashboard = () => {
         break;
       default:
         // Check if the department includes "production" (case insensitive)
-        if (department.includes("production")) {
+        if (departmentValue.includes("production")) {
           actions.push({
             icon: <FaClock />,
             label: "Add Overtime Form",

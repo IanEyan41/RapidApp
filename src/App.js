@@ -29,6 +29,9 @@ import Profile from "./components/Profile/Profile";
 import SuccessPopup from "./components/SuccessPopup";
 import VendorManagement from "./components/VendorManagement/VendorManagement";
 import Sidebar from "./components/Dashboard/Sidebar";
+import VehicleManagement from "./components/VehicleManagement/VehicleManagement";
+import VehicleDetail from "./components/VehicleManagement/VehicleDetail";
+import VehicleEdit from "./components/VehicleManagement/VehicleEdit";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -63,13 +66,7 @@ function App() {
               path="/"
               element={
                 user ? (
-                  <div className="App">
-                    <Sidebar userRole={userRole} />
-                    <div className="main-content">
-                      <h1>Welcome Home!</h1>
-                      {/* You can add more home page content here */}
-                    </div>
-                  </div>
+                  <Navigate to="/dashboard" replace />
                 ) : (
                   <div className="App">
                     <div className="login-container">
@@ -182,6 +179,20 @@ function App() {
               element={
                 user ? <VendorManagement /> : <Navigate to="/" replace />
               }
+            />
+            <Route
+              path="/vehicle-management"
+              element={
+                user ? <VehicleManagement /> : <Navigate to="/" replace />
+              }
+            />
+            <Route
+              path="/vehicle-management/detail/:id"
+              element={user ? <VehicleDetail /> : <Navigate to="/" replace />}
+            />
+            <Route
+              path="/vehicle-management/edit/:id"
+              element={user ? <VehicleEdit /> : <Navigate to="/" replace />}
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
