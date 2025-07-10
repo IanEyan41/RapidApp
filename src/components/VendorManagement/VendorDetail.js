@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { db } from "../../services/firebase";
+import { auth, db } from "../../services/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import "./VendorDetail.css";
 import { BsArrowLeft, BsPencil } from "react-icons/bs";
@@ -15,11 +15,28 @@ const VendorDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userRole, setUserRole] = useState("");
+  const [department, setDepartment] = useState("");
   const { theme, toggleTheme } = useTheme();
 
+  // Fetch user data and vendor details
   useEffect(() => {
-    const fetchVendorDetail = async () => {
+    const fetchData = async () => {
       try {
+        // Fetch user data
+        const user = auth.currentUser;
+        if (!user) {
+          navigate("/");
+          return;
+        }
+
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role);
+          setDepartment(userData.department || userData.role);
+        }
+
+        // Fetch vendor details
         const docRef = doc(db, "vendor-management", id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -28,16 +45,15 @@ const VendorDetail = () => {
           setError("Vendor record not found");
         }
       } catch (err) {
-        console.error("Error fetching vendor details:", err);
-        setError("Failed to fetch vendor details");
+        console.error("Error fetching data:", err);
+        setError("Failed to fetch data");
       } finally {
         setLoading(false);
       }
     };
-    if (id) {
-      fetchVendorDetail();
-    }
-  }, [id]);
+
+    fetchData();
+  }, [id, navigate]);
 
   const handleBack = () => {
     navigate("/vendor-management");
@@ -59,7 +75,7 @@ const VendorDetail = () => {
 
   return (
     <div className={`em-management-container ${theme}-theme`}>
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={department || userRole} />
       <div className="em-main-content">
         <header className="em-header">
           <h1>Vendor Details</h1>

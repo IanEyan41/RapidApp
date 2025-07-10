@@ -28,6 +28,8 @@ import PowerBIDashboard from "./components/Dashboard/PowerBIDashboard";
 import Profile from "./components/Profile/Profile";
 import SuccessPopup from "./components/SuccessPopup";
 import VendorManagement from "./components/VendorManagement/VendorManagement";
+import VendorDetail from "./components/VendorManagement/VendorDetail";
+import VendorEdit from "./components/VendorManagement/VendorEdit";
 import Sidebar from "./components/Dashboard/Sidebar";
 import VehicleManagement from "./components/VehicleManagement/VehicleManagement";
 import VehicleDetail from "./components/VehicleManagement/VehicleDetail";
@@ -179,6 +181,14 @@ function App() {
               element={
                 user ? <VendorManagement /> : <Navigate to="/" replace />
               }
+            />
+            <Route
+              path="/vendor-management/detail/:id"
+              element={user ? <VendorDetail /> : <Navigate to="/" replace />}
+            />
+            <Route
+              path="/vendor-management/edit/:id"
+              element={user ? <VendorEdit /> : <Navigate to="/" replace />}
             />
             <Route
               path="/vehicle-management"

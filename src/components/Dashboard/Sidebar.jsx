@@ -42,10 +42,12 @@ const Sidebar = ({ userRole }) => {
       "/employee-management",
       "/overtime-management",
       "/driver-management",
-      "/vendor-form",
-      "/bus-form",
+      "/vendor-management",
+      "/vehicle-management",
     ];
+
     // Check if current path starts with any of the form paths
+    // This will match main pages, detail pages, and edit pages
     return formPaths.some((path) => location.pathname.startsWith(path));
   };
 

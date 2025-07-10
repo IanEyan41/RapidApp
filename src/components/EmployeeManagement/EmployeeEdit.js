@@ -2,59 +2,83 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import "./EmployeeManagement.css";
 import { auth, db, recordActivity } from "../../services/firebase";
-import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { BsArrowLeft } from "react-icons/bs";
 import Sidebar from "../Dashboard/Sidebar";
 import { useTheme } from "../../services/ThemeContext";
 import { BsSun, BsMoon } from "react-icons/bs";
-import DeleteConfirmation from "./DeleteConfirmation";
-import EmployeeDeleteSuccessPopup from "./EmployeeDeleteSuccessPopup";
 import EmployeeEditSuccessPopup from "./EmployeeEditSuccessPopup";
 
 const EmployeeEdit = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const [formData, setFormData] = useState({
-    employeeNumber: "",
     employeeName: "",
+    employeeNumber: "",
     phoneNumber: "",
     email: "",
     address: "",
     postalCode: "",
+    country: "Malaysia",
+    state: "",
+    city: "",
+    department: "",
     shift: "A",
-    department: "Production",
     location: "",
-    routeCode: "89",
+    routeCode: "1",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState("");
+  const [department, setDepartment] = useState("");
   const { theme, toggleTheme } = useTheme();
-  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const [showDeleteSuccessPopup, setShowDeleteSuccessPopup] = useState(false);
-  const [showEditSuccessPopup, setShowEditSuccessPopup] = useState(false);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+
+  // Fetch user data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          navigate("/");
+          return;
+        }
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role);
+          setDepartment(userData.department || userData.role);
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Failed to fetch user data");
+      }
+    };
+    fetchUserData();
+  }, [navigate]);
 
   useEffect(() => {
     const fetchEmployeeData = async () => {
       try {
         const docRef = doc(db, "employee-management", id);
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists()) {
           const data = docSnap.data();
           setFormData({
-            employeeNumber: data.employeeNumber || "",
             employeeName: data.employeeName || "",
+            employeeNumber: data.employeeNumber || "",
             phoneNumber: data.phoneNumber || "",
             email: data.email || "",
             address: data.address || "",
             postalCode: data.postalCode || "",
+            country: data.country || "Malaysia",
+            state: data.state || "",
+            city: data.city || "",
+            department: data.department || "",
             shift: data.shift || "A",
-            department: data.department || "Production",
             location: data.location || "",
-            routeCode: data.routeCode || "89",
+            routeCode: data.routeCode || "1",
           });
         } else {
           setError("Employee record not found");
@@ -66,7 +90,6 @@ const EmployeeEdit = () => {
         setLoading(false);
       }
     };
-
     if (id) {
       fetchEmployeeData();
     }
@@ -84,20 +107,15 @@ const EmployeeEdit = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
-
     try {
       const docRef = doc(db, "employee-management", id);
       await updateDoc(docRef, formData);
-
-      // Record the activity
       const user = auth.currentUser;
       await recordActivity(
         user,
         `Updated employee ${formData.employeeName} (${formData.employeeNumber})`
       );
-
-      // Show success popup instead of navigating immediately
-      setShowEditSuccessPopup(true);
+      setShowSuccessPopup(true);
       setIsSubmitting(false);
     } catch (err) {
       console.error("Error updating document: ", err);
@@ -106,48 +124,24 @@ const EmployeeEdit = () => {
     }
   };
 
-  const handleDelete = async () => {
-    setIsDeleting(true);
-    try {
-      const docRef = doc(db, "employee-management", id);
-      await deleteDoc(docRef);
-
-      // Show success popup instead of navigating immediately
-      setShowDeleteConfirmation(false);
-      setShowDeleteSuccessPopup(true);
-    } catch (err) {
-      console.error("Error deleting document: ", err);
-      setError("Failed to delete record. Please try again.");
-      setIsDeleting(false);
-      setShowDeleteConfirmation(false);
-    }
-  };
-
-  const handleDeleteSuccessClose = () => {
-    setShowDeleteSuccessPopup(false);
-    navigate("/employee-management");
-  };
-
-  const handleEditSuccessClose = () => {
-    setShowEditSuccessPopup(false);
+  const handleBack = () => {
     navigate(`/employee-management/detail/${id}`);
   };
 
-  const handleBack = () => {
+  const handleSuccessClose = () => {
+    setShowSuccessPopup(false);
     navigate(`/employee-management/detail/${id}`);
   };
 
   if (loading) {
     return <div className="employee-detail-loading">Loading...</div>;
   }
-
   if (error) {
     return <div className="employee-detail-error">{error}</div>;
   }
-
   return (
     <div className={`em-management-container ${theme}-theme`}>
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={department || userRole} />
       <div className="em-main-content">
         <header className="em-header">
           <h1>Edit Employee</h1>
@@ -161,34 +155,20 @@ const EmployeeEdit = () => {
             </div>
           </div>
         </header>
-
         <button className="em-back-button" onClick={handleBack}>
           <BsArrowLeft /> Back
         </button>
-
         <div className="employee-detail-content">
           <div className="detail-header">
             <h2>Edit Employee Form</h2>
           </div>
-
           <form onSubmit={handleSubmit}>
             {error && <div className="error-message">{error}</div>}
-
             <div className="detail-section">
               <h3>Employee Details</h3>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Employee Number/Signs</label>
-                  <input
-                    type="text"
-                    name="employeeNumber"
-                    value={formData.employeeNumber}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-                <div className="form-group">
-                  <label>Employee Name:</label>
+                  <label>Employee Name</label>
                   <input
                     type="text"
                     name="employeeName"
@@ -197,8 +177,17 @@ const EmployeeEdit = () => {
                     required
                   />
                 </div>
+                <div className="form-group">
+                  <label>Employee Number / ID</label>
+                  <input
+                    type="text"
+                    name="employeeNumber"
+                    value={formData.employeeNumber}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
               </div>
-
               <div className="form-row">
                 <div className="form-group">
                   <label>Phone Number</label>
@@ -221,10 +210,9 @@ const EmployeeEdit = () => {
                   />
                 </div>
               </div>
-
               <div className="form-row">
                 <div className="form-group full-width">
-                  <label>Employee Address</label>
+                  <label>Address</label>
                   <input
                     type="text"
                     name="address"
@@ -234,7 +222,6 @@ const EmployeeEdit = () => {
                   />
                 </div>
               </div>
-
               <div className="form-row">
                 <div className="form-group">
                   <label>Postal/ZIP Code</label>
@@ -242,6 +229,50 @@ const EmployeeEdit = () => {
                     type="text"
                     name="postalCode"
                     value={formData.postalCode}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Country</label>
+                  <input
+                    type="text"
+                    name="country"
+                    value={formData.country}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>State</label>
+                  <input
+                    type="text"
+                    name="state"
+                    value={formData.state}
+                    onChange={handleChange}
+                  />
+                </div>
+                <div className="form-group">
+                  <label>City</label>
+                  <input
+                    type="text"
+                    name="city"
+                    value={formData.city}
+                    onChange={handleChange}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="detail-section">
+              <h3>Department Information</h3>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Department</label>
+                  <input
+                    type="text"
+                    name="department"
+                    value={formData.department}
                     onChange={handleChange}
                     required
                   />
@@ -260,24 +291,7 @@ const EmployeeEdit = () => {
                   </select>
                 </div>
               </div>
-            </div>
-
-            <div className="detail-section">
-              <h3>Department Information</h3>
               <div className="form-row">
-                <div className="form-group">
-                  <label>Department</label>
-                  <select
-                    name="department"
-                    value={formData.department}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="Production">Production</option>
-                    <option value="HR">HR</option>
-                    <option value="Transport">Transport</option>
-                  </select>
-                </div>
                 <div className="form-group">
                   <label>Location</label>
                   <input
@@ -285,73 +299,34 @@ const EmployeeEdit = () => {
                     name="location"
                     value={formData.location}
                     onChange={handleChange}
-                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Route Code</label>
+                  <input
+                    type="text"
+                    name="routeCode"
+                    value={formData.routeCode}
+                    onChange={handleChange}
                   />
                 </div>
               </div>
             </div>
-
-            <div className="detail-section">
-              <h3>Route Assignment</h3>
-              <div className="form-group">
-                <label>Route Code</label>
-                <input
-                  type="text"
-                  name="routeCode"
-                  value={formData.routeCode}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-            </div>
-
             <div className="form-actions">
               <button
-                type="button"
-                className="delete-button"
-                onClick={() => setShowDeleteConfirmation(true)}
+                type="submit"
+                className="submit-button"
+                disabled={isSubmitting}
               >
-                Delete
+                {isSubmitting ? "Submitting..." : "Update"}
               </button>
-              <div className="right-buttons">
-                <button
-                  type="button"
-                  className="cancel-button"
-                  onClick={handleBack}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="submit-button"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Updating..." : "Update"}
-                </button>
-              </div>
             </div>
           </form>
         </div>
       </div>
-
-      <DeleteConfirmation
-        isOpen={showDeleteConfirmation}
-        onConfirm={handleDelete}
-        onCancel={() => setShowDeleteConfirmation(false)}
-        id={id}
-        formData={formData}
-        setShowDeleteConfirmation={setShowDeleteConfirmation}
-      />
-
-      <EmployeeDeleteSuccessPopup
-        isOpen={showDeleteSuccessPopup}
-        onClose={handleDeleteSuccessClose}
-        employeeName={formData.employeeName}
-      />
-
       <EmployeeEditSuccessPopup
-        isOpen={showEditSuccessPopup}
-        onClose={handleEditSuccessClose}
+        isOpen={showSuccessPopup}
+        onClose={handleSuccessClose}
         employeeName={formData.employeeName}
       />
     </div>

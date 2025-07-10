@@ -19,6 +19,7 @@ import { useTheme } from "../../services/ThemeContext";
 import { BsSun, BsMoon } from "react-icons/bs";
 import { FaSearch, FaPlus, FaEllipsisH } from "react-icons/fa";
 import { FiRefreshCw } from "react-icons/fi";
+import VehicleSuccessPopup from "./VehicleSuccessPopup";
 
 const VehicleManagement = () => {
   const navigate = useNavigate();
@@ -33,6 +34,7 @@ const VehicleManagement = () => {
   const [vehicleData, setVehicleData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
 
   // Fetch user data
   useEffect(() => {
@@ -145,10 +147,17 @@ const VehicleManagement = () => {
       await deleteDoc(doc(db, "vehicle-management", vehicleId));
       const user = auth.currentUser;
       await recordActivity(user, `Deleted vehicle ${plateNumber}`);
+      setShowSuccessPopup(true);
     } catch (error) {
       console.error("Error deleting vehicle:", error);
       setError("Failed to delete vehicle. Please try again.");
     }
+  };
+
+  const formatDate = (timestamp) => {
+    if (!timestamp) return "N/A";
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return `${date.getDate()}/${date.getMonth() + 1}`;
   };
 
   return (
@@ -179,6 +188,7 @@ const VehicleManagement = () => {
                 onClick={() => {
                   setSelectedTypes(["Bus", "Van"]);
                   setCapacityRange([0, 100]);
+                  setSearchQuery("");
                 }}
               >
                 <FiRefreshCw />
@@ -217,57 +227,66 @@ const VehicleManagement = () => {
               <FaSearch className="em-search-icon" />
               <input
                 type="text"
-                placeholder="Search Bus"
+                placeholder="Search Vehicle Plate Number or Type"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
               <button className="em-add-form-button" onClick={handleAddForm}>
-                <FaPlus /> Add Bus
+                <FaPlus /> Add Vehicle
               </button>
             </div>
-            <table className="em-employee-table">
-              <thead>
-                <tr>
-                  <th>Plate Number</th>
-                  <th>Vehicle Type</th>
-                  <th>Manufacture Year</th>
-                  <th>Capacity</th>
-                  <th>Maintenance</th>
-                  <th>Routes</th>
-                  <th>Details</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.length === 0 ? (
+
+            {error && <div className="em-error-message">{error}</div>}
+
+            {isLoading ? (
+              <div className="em-loading">Loading...</div>
+            ) : (
+              <table className="em-employee-table">
+                <thead>
                   <tr>
-                    <td colSpan="7" className="no-data">
-                      No vehicles found.
-                    </td>
+                    <th>Plate Number</th>
+                    <th>Vehicle Type</th>
+                    <th>Manufacture Year</th>
+                    <th>Capacity</th>
+                    <th>Maintenance</th>
+                    <th>Routes</th>
+                    <th>Details</th>
                   </tr>
-                ) : (
-                  filteredData.map((vehicle) => (
-                    <tr key={vehicle.id}>
-                      <td>{vehicle.plateNumber}</td>
-                      <td>{vehicle.vehicleType}</td>
-                      <td>{vehicle.manufactureYear}</td>
-                      <td>{vehicle.capacity}</td>
-                      <td>{vehicle.maintenanceDate}</td>
-                      <td>{vehicle.routeCount}</td>
-                      <td>
-                        <button
-                          className="em-details-button"
-                          onClick={() =>
-                            navigate(`/vehicle-management/detail/${vehicle.id}`)
-                          }
-                        >
-                          <FaEllipsisH />
-                        </button>
+                </thead>
+                <tbody>
+                  {filteredData.length === 0 ? (
+                    <tr>
+                      <td colSpan="7" className="no-data">
+                        No vehicles found.
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    filteredData.map((vehicle) => (
+                      <tr key={vehicle.id}>
+                        <td>{vehicle.plateNumber}</td>
+                        <td>{vehicle.vehicleType}</td>
+                        <td>{vehicle.manufactureYear}</td>
+                        <td>{vehicle.capacity}</td>
+                        <td>{vehicle.maintenanceDate}</td>
+                        <td>{vehicle.routeCount}</td>
+                        <td>
+                          <button
+                            className="em-details-button"
+                            onClick={() =>
+                              navigate(
+                                `/vehicle-management/detail/${vehicle.id}`
+                              )
+                            }
+                          >
+                            <FaEllipsisH />
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
         <VehicleForm
@@ -275,6 +294,10 @@ const VehicleManagement = () => {
           onClose={() => setIsFormOpen(false)}
           onSubmit={handleAddFormSubmit}
         />
+
+        {showSuccessPopup && (
+          <VehicleSuccessPopup onClose={() => setShowSuccessPopup(false)} />
+        )}
       </div>
     </div>
   );

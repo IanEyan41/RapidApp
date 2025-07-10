@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { db } from "../../services/firebase";
+import { auth, db } from "../../services/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import "../EmployeeManagement/EmployeeDetail.css";
 import { BsArrowLeft, BsPencil } from "react-icons/bs";
 import Sidebar from "../Dashboard/Sidebar";
 import { useTheme } from "../../services/ThemeContext";
 import { BsSun, BsMoon } from "react-icons/bs";
+import DeleteConfirmation from "./DeleteConfirmation";
 
 const VehicleDetail = () => {
   const navigate = useNavigate();
@@ -15,7 +16,30 @@ const VehicleDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [userRole, setUserRole] = useState("");
+  const [department, setDepartment] = useState("");
   const { theme, toggleTheme } = useTheme();
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          navigate("/");
+          return;
+        }
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role);
+          setDepartment(userData.department || userData.role);
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+      }
+    };
+    fetchUserData();
+  }, [navigate]);
 
   useEffect(() => {
     const fetchVehicleDetail = async () => {
@@ -46,6 +70,10 @@ const VehicleDetail = () => {
     navigate(`/vehicle-management/edit/${id}`);
   };
 
+  const handleDelete = () => {
+    setShowDeleteConfirmation(true);
+  };
+
   if (loading) {
     return <div className="employee-detail-loading">Loading...</div>;
   }
@@ -58,10 +86,10 @@ const VehicleDetail = () => {
 
   return (
     <div className={`em-management-container ${theme}-theme`}>
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={department || userRole} />
       <div className="em-main-content">
         <header className="em-header">
-          <h1>Bus Details</h1>
+          <h1>Vehicle Details</h1>
           <div className="header-controls-em">
             <div className="theme-toggle-em" onClick={toggleTheme}>
               {theme === "dark" ? (
@@ -78,9 +106,11 @@ const VehicleDetail = () => {
         <div className="employee-detail-content">
           <div className="detail-header">
             <h2>Vehicle Details</h2>
-            <button className="edit-button" onClick={handleEdit}>
-              <BsPencil /> Edit
-            </button>
+            <div className="detail-actions">
+              <button className="edit-button" onClick={handleEdit}>
+                <BsPencil /> Edit
+              </button>
+            </div>
           </div>
           <section className="detail-section">
             <h3>Vehicle Details</h3>
@@ -114,6 +144,10 @@ const VehicleDetail = () => {
                 <label>Next Scheduled:</label>
                 <span>{vehicleData.nextScheduled}</span>
               </div>
+              <div className="detail-item">
+                <label>Maintenance Date:</label>
+                <span>{vehicleData.maintenanceDate}</span>
+              </div>
             </div>
           </section>
           <section className="detail-section">
@@ -134,8 +168,27 @@ const VehicleDetail = () => {
               </div>
             </div>
           </section>
+
+          <div className="form-actions">
+            <button
+              type="button"
+              className="delete-button"
+              onClick={handleDelete}
+            >
+              Delete Vehicle
+            </button>
+          </div>
         </div>
       </div>
+
+      <DeleteConfirmation
+        isOpen={showDeleteConfirmation}
+        onConfirm={() => {}}
+        onCancel={() => setShowDeleteConfirmation(false)}
+        id={id}
+        formData={vehicleData}
+        setShowDeleteConfirmation={setShowDeleteConfirmation}
+      />
     </div>
   );
 };

@@ -35,11 +35,35 @@ const VendorEdit = () => {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState("");
+  const [department, setDepartment] = useState("");
   const { theme, toggleTheme } = useTheme();
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showDeleteSuccessPopup, setShowDeleteSuccessPopup] = useState(false);
   const [showEditSuccessPopup, setShowEditSuccessPopup] = useState(false);
+
+  // Fetch user data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const user = auth.currentUser;
+        if (!user) {
+          navigate("/");
+          return;
+        }
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setUserRole(userData.role);
+          setDepartment(userData.department || userData.role);
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        setError("Failed to fetch user data");
+      }
+    };
+    fetchUserData();
+  }, [navigate]);
 
   useEffect(() => {
     const fetchVendorData = async () => {
@@ -165,7 +189,7 @@ const VendorEdit = () => {
   }
   return (
     <div className={`em-management-container ${theme}-theme`}>
-      <Sidebar userRole={userRole} />
+      <Sidebar userRole={department || userRole} />
       <div className="em-main-content">
         <header className="em-header">
           <h1>Edit Vendor</h1>
