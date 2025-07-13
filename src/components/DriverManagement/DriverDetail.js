@@ -77,23 +77,23 @@ const DriverDetail = () => {
   }
 
   return (
-    <div className={`driver-management-container ${theme}-theme`}>
+    <div className={`dm-management-container ${theme}-theme`}>
       <Sidebar userRole={department || userRole} />
-      <div className="driver-main-content">
-        <header className="driver-header">
+      <div className="dm-main-content">
+        <header className="dm-header">
           <h1>Driver Details</h1>
-          <div className="header-controls-driver">
-            <div className="theme-toggle-driver" onClick={toggleTheme}>
+          <div className="header-controls-dm">
+            <div className="theme-toggle-dm" onClick={toggleTheme}>
               {theme === "dark" ? (
-                <BsSun className="theme-icon-driver" />
+                <BsSun className="theme-icon-dm" />
               ) : (
-                <BsMoon className="theme-icon-driver" />
+                <BsMoon className="theme-icon-dm" />
               )}
             </div>
           </div>
         </header>
 
-        <button className="driver-back-button" onClick={handleBack}>
+        <button className="dm-back-button" onClick={handleBack}>
           <BsArrowLeft /> Back
         </button>
 

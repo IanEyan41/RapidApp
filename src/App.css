@@ -687,6 +687,7 @@ body {
 .theme-icon,
 .theme-icon-em {
   animation: fadeRotate 0.3s ease-out forwards;
+  
 }
 
 /* Login page theme toggle */

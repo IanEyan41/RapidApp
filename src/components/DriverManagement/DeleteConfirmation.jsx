@@ -18,7 +18,7 @@ const DeleteConfirmation = ({
         <p>
           Are you sure you want to delete driver{" "}
           <strong>{formData.driverName}</strong> with license number{" "}
-          <strong>{formData.driverLicense}</strong>?
+          <strong>{formData.licenseNumber}</strong>?
         </p>
         <div className="confirmation-actions">
           <button className="cancel-button" onClick={onCancel}>

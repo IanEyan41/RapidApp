@@ -6,14 +6,17 @@ import DriverSuccessPopup from "./DriverSuccessPopup";
 const DriverForm = ({ isOpen, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
     driverName: "",
-    age: "",
+    driverNumber: "", // Driver ID
     phoneNumber: "",
+    email: "", // Email
     address: "",
     postalCode: "",
-    driverLicense: "",
-    psvLicense: "",
-    validUntil: "",
-    psvValidUntil: "",
+    licenseNumber: "", // License Number
+    licenseClass: "", // License Class
+    licenseExpiry: "", // Expiry Date
+    experience: "", // Years of Experience
+    vehicleAssigned: "", // Vehicle Assigned
+    shift: "A", // Shift
     routeCode: "1",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,25 +43,29 @@ const DriverForm = ({ isOpen, onClose, onSubmit }) => {
     try {
       // Call the onSubmit prop if provided
       if (onSubmit) {
-        await onSubmit(formData);
+        const result = await onSubmit(formData);
+        if (result) {
+          // Only show success popup if submission was successful
+          setShowSuccessPopup(true);
+
+          // Reset form data (but don't close it yet)
+          setFormData({
+            driverName: "",
+            driverNumber: "",
+            phoneNumber: "",
+            email: "",
+            address: "",
+            postalCode: "",
+            licenseNumber: "",
+            licenseClass: "",
+            licenseExpiry: "",
+            experience: "",
+            vehicleAssigned: "",
+            shift: "A",
+            routeCode: "1",
+          });
+        }
       }
-
-      // Show success popup instead of closing immediately
-      setShowSuccessPopup(true);
-
-      // Reset form (but don't close it yet)
-      setFormData({
-        driverName: "",
-        age: "",
-        phoneNumber: "",
-        address: "",
-        postalCode: "",
-        driverLicense: "",
-        psvLicense: "",
-        validUntil: "",
-        psvValidUntil: "",
-        routeCode: "1",
-      });
     } catch (err) {
       console.error("Error adding document: ", err);
       setError("Failed to submit form. Please try again.");
@@ -103,13 +110,13 @@ const DriverForm = ({ isOpen, onClose, onSubmit }) => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Age</label>
+                  <label>Driver ID</label>
                   <input
-                    type="number"
-                    name="age"
-                    value={formData.age}
+                    type="text"
+                    name="driverNumber"
+                    value={formData.driverNumber}
                     onChange={handleChange}
-                    placeholder="45"
+                    placeholder="DRV12345"
                     required
                   />
                 </div>
@@ -127,6 +134,17 @@ const DriverForm = ({ isOpen, onClose, onSubmit }) => {
                     value={formData.phoneNumber}
                     onChange={handleChange}
                     placeholder="+60 12-345 6789"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="driver@example.com"
                     required
                   />
                 </div>
@@ -165,48 +183,47 @@ const DriverForm = ({ isOpen, onClose, onSubmit }) => {
               <h3>License Information</h3>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Driver License</label>
+                  <label>License Number</label>
                   <input
                     type="text"
-                    name="driverLicense"
-                    value={formData.driverLicense}
+                    name="licenseNumber"
+                    value={formData.licenseNumber}
                     onChange={handleChange}
-                    placeholder="NY12345678"
+                    placeholder="MY12345678"
                     required
                   />
                 </div>
                 <div className="form-group">
-                  <label>Valid Until</label>
+                  <label>License Class</label>
                   <input
                     type="text"
-                    name="validUntil"
-                    value={formData.validUntil}
+                    name="licenseClass"
+                    value={formData.licenseClass}
                     onChange={handleChange}
-                    placeholder="12/2027"
+                    placeholder="D"
                     required
                   />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>PSV License</label>
+                  <label>Expiry Date</label>
                   <input
-                    type="text"
-                    name="psvLicense"
-                    value={formData.psvLicense}
+                    type="date"
+                    name="licenseExpiry"
+                    value={formData.licenseExpiry}
                     onChange={handleChange}
-                    placeholder="PSV-987654321"
                     required
                   />
                 </div>
                 <div className="form-group">
-                  <label>Valid Until</label>
+                  <label>Years of Experience</label>
                   <input
-                    type="text"
-                    name="psvValidUntil"
-                    value={formData.psvValidUntil}
+                    type="number"
+                    name="experience"
+                    value={formData.experience}
                     onChange={handleChange}
-                    placeholder="9/2026"
+                    placeholder="5"
                     required
                   />
                 </div>
@@ -214,22 +231,50 @@ const DriverForm = ({ isOpen, onClose, onSubmit }) => {
             </div>
 
             <div className="form-section">
-              <h3>Routes Covered</h3>
-              <div className="form-group">
-                <label>Route Code</label>
-                <select
-                  name="routeCode"
-                  value={formData.routeCode}
-                  onChange={handleChange}
-                  required
-                  className="route-select"
-                >
-                  {routeCodes.map((code) => (
-                    <option key={code} value={code}>
-                      Route {code}
-                    </option>
-                  ))}
-                </select>
+              <h3>Assignment</h3>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Vehicle Assigned</label>
+                  <input
+                    type="text"
+                    name="vehicleAssigned"
+                    value={formData.vehicleAssigned}
+                    onChange={handleChange}
+                    placeholder="BUS-123"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Shift</label>
+                  <select
+                    name="shift"
+                    value={formData.shift}
+                    onChange={handleChange}
+                    required
+                  >
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                  </select>
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Route Code</label>
+                  <select
+                    name="routeCode"
+                    value={formData.routeCode}
+                    onChange={handleChange}
+                    required
+                    className="route-select"
+                  >
+                    {routeCodes.map((code) => (
+                      <option key={code} value={code}>
+                        Route {code}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -249,7 +294,11 @@ const DriverForm = ({ isOpen, onClose, onSubmit }) => {
         </div>
       </div>
 
-      {showSuccessPopup && <DriverSuccessPopup onClose={handleSuccessClose} />}
+      <DriverSuccessPopup
+        isOpen={showSuccessPopup}
+        onClose={handleSuccessClose}
+        driverName={formData.driverName}
+      />
     </>
   );
 };

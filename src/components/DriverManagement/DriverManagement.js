@@ -128,13 +128,13 @@ const DriverManagement = () => {
     // Search filter
     const matchesSearch =
       entry.driverName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      entry.driverLicense?.toLowerCase().includes(searchQuery.toLowerCase());
+      entry.licenseNumber?.toLowerCase().includes(searchQuery.toLowerCase());
 
     if (!matchesSearch) return false;
 
     // Expiry date filtering
     const today = new Date();
-    const expiryDate = new Date(entry.validUntil);
+    const expiryDate = new Date(entry.licenseExpiry);
     const thirtyDaysFromNow = new Date();
     thirtyDaysFromNow.setDate(today.getDate() + 30);
 
@@ -171,7 +171,7 @@ const DriverManagement = () => {
       const user = auth.currentUser;
       await recordActivity(
         user,
-        `Added new driver ${formData.driverName} (License: ${formData.driverLicense})`
+        `Added new driver ${formData.driverName} (License: ${formData.licenseNumber})`
       );
 
       return true;
@@ -222,7 +222,7 @@ const DriverManagement = () => {
               </button>
             </div>
             <div className="dm-expiry-filters">
-              <h4>PSV Expiry Date</h4>
+              <h4>License Expiry Date</h4>
               <label>
                 <input
                   type="checkbox"
@@ -281,8 +281,8 @@ const DriverManagement = () => {
                   ) : (
                     filteredData.map((entry) => (
                       <tr key={entry.id}>
-                        <td>{entry.driverLicense}</td>
-                        <td>{entry.validUntil}</td>
+                        <td>{entry.licenseNumber}</td>
+                        <td>{entry.licenseExpiry}</td>
                         <td>{entry.driverName}</td>
                         <td>{entry.routeCode || "1"}</td>
                         <td>
